@@ -1,0 +1,10 @@
+<complexType name="LogType">
+  <choice minOccurs="0" maxOccurs="unbounded">
+    <element name="userCommand" type="UserCommandType"/>
+    <element name="quoteServer" type="QuoteServerType"/>
+    <element name="accountTransaction" type="AccountTransactionType"/>
+    <element name="systemEvent" type="SystemEventType"/>
+    <element name="errorEvent" type="ErrorEventType"/>
+    <element name="debugEvent" type="DebugType"/>
+  </choice>
+</complexType>
