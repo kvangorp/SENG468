@@ -292,11 +292,4 @@ def logGen():
 
 # pretty string
 logGen().write('testPrint.xml', pretty_print=True)
-#s = etree.tostring(logGen(), pretty_print=True)
-# original_stdout = sys.stdout # Save a reference to the original standard output
-# with open('testPrint.xml', 'w') as f:
-#     sys.stdout = f # Change the standard output to the file we created.
-#     print((s))
-#     # for child in s:
-#     #     print(child.tag)
-#     sys.stdout = original_stdout # Reset the standard output to its original value
+
