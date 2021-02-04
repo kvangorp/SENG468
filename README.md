@@ -14,7 +14,7 @@ docker container prune
 ```
 - Start up db by running:
 ```
-docker-compose run
+docker-compose up
 ```
 - To start up django backend, go to TransactionServer folder and run:
 
