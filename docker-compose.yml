@@ -1,0 +1,18 @@
+version: '2'
+services:
+  db:
+    container_name: db
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: seng468
+    volumes:
+      - ./Database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

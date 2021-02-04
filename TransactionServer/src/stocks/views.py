@@ -5,6 +5,4 @@ from .models import Stock
 
 class StockView(viewsets.ModelViewSet):
     serializer_class = StockSerializer
-    
-    def (self):
-        user = self.request.data = 
+    queryset = Stock.objects.all()
