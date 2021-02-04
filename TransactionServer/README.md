@@ -5,4 +5,4 @@
 | ADD | PUT | /api/accounts/{userId}/ |
 | QUOTE | GET | /api/quotes/{stockSymbol}/user/{userId} |
 | COMMIT BUY, COMMIT SELL | PUT | /api/stocks/{stockSymbol}/user/{userId} |
-| COMMIT BUY TRIGGER, COMMIT SELL TRIGGER | POST | /api/triggers/{stockSymbol}/user/{userId} |
+| SET BUY TRIGGER, CANCEL BUY TRIGGER, SET SELL TRIGGER, CANCEL SELL TRIGGER, SET BUY AMOUNT, CANCEL SET BUY, SET SELL AMOUNT, CANCEL SELL AMOUNT  | POST | /api/triggers/{stockSymbol}/user/{userId} |
