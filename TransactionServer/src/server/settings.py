@@ -80,12 +80,10 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'djongo',
         'NAME': 'ariesdb',
-        'USER': 'root',
-        'PASSWORD': 'seng468',
         'HOST': 'localhost',
-        'PORT': 3306,
+        'PORT': 27017
     }
 }
 
