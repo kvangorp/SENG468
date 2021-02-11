@@ -1,7 +1,6 @@
-from rest_framework import routers
-from .views import TriggerView
+from django.urls import path
+from .views import TriggerListView
 
-router = routers.DefaultRouter()
-router.register('triggers', TriggerView, 'triggers')
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('triggers/', TriggerListView.as_view())
+]
