@@ -1,6 +1,8 @@
 from django.db import models
 
 class Quote(models.Model):
-    userId = models.CharField(max_length=50)
+    quote = models.FloatField()
     stockSymbol = models.CharField(max_length=50)
-    amount = models.IntegerField()
+    userId = models.CharField(max_length=50)
+    timestamp = models.DateTimeField()
+    cryptokey = models.CharField(max_length=50)
