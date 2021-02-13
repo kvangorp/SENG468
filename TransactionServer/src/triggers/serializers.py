@@ -4,4 +4,4 @@ from .models import Trigger
 class TriggerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trigger
-        fields = ('stockSymbol', 'triggerPoint', 'shares', 'isBuy')
+        fields = ('id', 'userId', 'stockSymbol', 'triggerPoint', 'shares', 'isBuy')

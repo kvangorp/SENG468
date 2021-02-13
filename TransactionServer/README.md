@@ -2,7 +2,9 @@
 
 | Assigned | User Commands | HTTP Method | Endpoint |
 | --- | --- | --- | --- |
-| Connor | ADD | PUT | /api/accounts/{userId}/ |
-| Dayton | QUOTE | GET | /api/quotes/{stockSymbol}/user/{userId} |
-| Tram | COMMIT BUY, COMMIT SELL | PUT | /api/stocks/{stockSymbol}/user/{userId} |
-| Katelyn | SET BUY TRIGGER, CANCEL BUY TRIGGER, SET SELL TRIGGER, CANCEL SELL TRIGGER, SET BUY AMOUNT, CANCEL SET BUY, SET SELL AMOUNT, CANCEL SET SELL  | POST | /api/triggers/{stockSymbol}/user/{userId} |
+| Connor | ADD | PUT | /api/accounts/{id}/ |
+| Dayton | QUOTE | GET | /api/quotes/{id} |
+| Tram | COMMIT BUY, COMMIT SELL | PUT | /api/stocks/{id} |
+| Katelyn | SET BUY AMOUNT, SET SELL AMOUNT  | POST | /api/triggers/ |
+| "" | SET BUY TRIGGER, SET SELL TRIGGER | PUT | /api/triggers/{id} |
+| "" | CANCEL SET BUY, CANCEL SET SELL | DELETE | /api/triggers/{id} |
