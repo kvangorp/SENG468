@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'accounts',
     'quotes',
     'stocks',
-    'triggers'
+    'triggers',
+    'transactions'
 ]
 
 MIDDLEWARE = [
