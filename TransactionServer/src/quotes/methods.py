@@ -1,19 +1,35 @@
-import requests
+import socket, sys
 
-#get quote data from server
-quoteReq = 'S, oY01WVirLr'.encode()
-r = requests.get('http://192.168.4.2:4444',params = quoteReq)
+# Print info for the user
+print("\nEnter: StockSYM, userid");
+print("  Invalid entry will return 'NA' for userid.");
+print("  Returns: quote,sym,userid,timestamp,cryptokey\n");
 
-elements = r.content.decode().split(',')
+# Get a line of text from the user
+#fromUser = sys.stdin.readline().encode();
+def quoteClient(sym,id):
+    # Create the socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Connect the socket
+    s.connect(('127.0.0.1',12345))
+    # Send the user's query
+    s.send('S,oY01WVirLr'.encode())
+    #s.send(fromUser)
+
+
+    #Retrieving and parsing relevant data 
+    data = s.recv(2048).decode()
+    elements = data.split(',')
  
-quoteResult = {
-'quote':elements[0],
-'stockSymbol':elements[1],
-'userID':elements[2],
-'timestamp':elements[3],
-'cryptokey':elements[4]
-}
+    quote = elements[0]
+    stockSymbol = elements[1]
+    userID = elements[2]
+    timestamp = elements[3]
+    cryptokey = elements[4]
+    s.close()
+    return data
 
-resp1 = requests.post('http://localhost:8000/api/quotes/', data=quoteResult)
-print(f"Response after adding quote: {resp1.json()}")
+# close the connection, and the socket
+
+
 

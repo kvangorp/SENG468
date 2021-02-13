@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import quotes_view
+from .views import QuoteView
 
 urlpatterns = [
-    path('quotes/', quotes_view.as_view()),
-    path('quotes/<string:quotesymbol>/', quotes_view.as_view())
+    path('quotes/<str:id>/<str:sym>/', QuoteView.as_view())
 ]
