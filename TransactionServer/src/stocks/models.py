@@ -4,3 +4,4 @@ class Stock(models.Model):
     userId = models.CharField(max_length=50)
     stockSymbol = models.CharField(max_length=50)
     shares = models.IntegerField()
+    reserved = models.BooleanField(default=False)
