@@ -40,7 +40,9 @@ def commandSwitch(command):
     elif command[0] == 'COMMIT_BUY':
         print(command[0])
         commit_buy(command[1])
-	# elif command == 'CANCEL_BUY':
+    elif command[0] == 'CANCEL_BUY':
+        print(command[0])
+        cancel_buy(command[1])
     # elif command == 'SELL':
     #     sell(command[1], command[2], command[3])
 	# elif command == 'COMMIT_SELL':
@@ -95,12 +97,8 @@ def buy(userid, stock, dollar_amount):
     else:
         user_command_log(userid, dollar_amount, 'BUY', stock)
 
-def sell(userid, stock, dollar_amount):
-    return
-
+#TODO: add status field to buy commands: pending, commited, cancelled
 def commit_buy(userid):
-    # grab the latest buy w this userid 
-    # check timestamp
     data = {
         'userId': userid,
         'userCommand': 'BUY'
@@ -117,6 +115,7 @@ def commit_buy(userid):
         amount = latest_buy[0]['amount']
     else:
         return
+
     data = {
         'userId': userid,
         'userCommand': 'COMMIT_BUY'
@@ -163,11 +162,34 @@ def commit_buy(userid):
         data = {
             'userId': userid,
             'stockSymbol': stock,
-            'shares': shares
+            'shares': shares,
+            'amount': amount
         }
         print(data)
-        res = requests.post(f'http://localhost:8000/api/stocks/', json=data).json()
-        print(res)
+        res = requests.put(f'http://localhost:8000/api/stocks/{userid}/{stock}/', json=data)
+        print(res.json)
+    user_command_log(userid, amount, 'COMMIT_BUY', stock)
+
+def cancel_buy(userid):
+    data = {
+        'userId': userid,
+        'userCommand': 'BUY'
+    }
+    res = requests.get('http://localhost:8000/api/transactions/', params=data)
+    print(res)
+    list_of_transactions = res.json()
+    print(list_of_transactions)
+    latest_buy = sorted(list_of_transactions, key=lambda k: k['timestamp'], reverse=True)
+    buy_time = ''
+    if list_of_transactions:
+        buy_time = float(latest_buy[0]['timestamp'])
+    else:
+        return
+    if (time() - buy_time) <= 60.0:
+        user_command_log(userid=userid, command='CANCEL_BUY')
+
+def sell(userid, stock, dollar_amount):
+    return
 
 for line in Lines:
     fileLine = line.split(' ')
