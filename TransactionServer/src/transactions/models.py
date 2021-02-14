@@ -7,7 +7,7 @@ class Transactions(models.Model):
     stockSymbol = models.CharField(max_length=50, blank=True)
     userCommand = models.CharField(max_length=50, blank=True)
     timestamp = models.FloatField(default=time())
-    quoteServerTime = models.DateTimeField(blank=True)
+    quoteServerTime = models.FloatField(blank=True)
     cryptoKey = models.CharField(max_length=50, blank=True)
     price = models.FloatField(blank=True)
     server = models.CharField(max_length=50, blank=True)
