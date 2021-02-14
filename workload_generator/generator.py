@@ -250,6 +250,7 @@ def cancel_sell(userid):
         user_command_log(userid=userid, command='CANCEL_SELL')
 
 def dumplog(filename):
+    filename = filename.strip()
     res = requests.get('http://localhost:8000/api/transactions/')
     for row in res.json():
         if row['type'] == 'userCommand':
@@ -260,7 +261,7 @@ def dumplog(filename):
                 'cmd': row['userCommand'],
                 'user': row['userId'],
                 'stock': row['stockSymbol'],
-                'file': filename.strip(),
+                'file': filename,
                 'funds': str(row['amount'])
             }
             eTree = XMLgen.userCommandsGen(input)
