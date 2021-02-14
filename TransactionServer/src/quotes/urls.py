@@ -1,7 +1,6 @@
-from rest_framework import routers
+from django.urls import path
 from .views import QuoteView
 
-router = routers.DefaultRouter()
-router.register('quotes', QuoteView, 'quotes')
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('quotes/<str:id>/<str:sym>/', QuoteView.as_view())
+]
