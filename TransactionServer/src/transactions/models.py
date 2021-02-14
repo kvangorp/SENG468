@@ -1,10 +1,12 @@
 from django.db import models
+from time import time
 
 class Transactions(models.Model):
+    type = models.CharField(max_length=50, blank=True)
     userId = models.CharField(max_length=50, blank=True)
     stockSymbol = models.CharField(max_length=50, blank=True)
     userCommand = models.CharField(max_length=50, blank=True)
-    timestamp = models.DateTimeField(blank=True)
+    timestamp = models.FloatField(default=time())
     quoteServerTime = models.DateTimeField(blank=True)
     cryptoKey = models.CharField(max_length=50, blank=True)
     price = models.FloatField(blank=True)
