@@ -28,7 +28,7 @@ def userCommandsGen(input):
     funds = etree.SubElement(commandType, "funds") 
     funds.text = input['funds']
 
-    return etree.ElementTree(commandType)
+    return commandType
 
 def quoteServerGen(input):
     quoteServer = etree.Element("quoteServer")
@@ -111,7 +111,7 @@ def systemEventGen(input):
 
     return etree.ElementTree(systemEvent)
 
-def errorEventGen():
+def errorEventGen(input):
     errorEvent = etree.Element("errorEvent")
     
     timestamp = etree.SubElement(errorEvent, "eletimestampment") 
@@ -143,7 +143,7 @@ def errorEventGen():
 
     return etree.ElementTree(errorEvent)
 
-def debugEventGen():
+def debugEventGen(input):
     debugEvent = etree.Element("debugEvent") 
     
     timestamp = etree.SubElement(debugEvent, "timestamp") 
@@ -175,7 +175,7 @@ def debugEventGen():
 
     return etree.ElementTree(debugEvent)
 
-def logGen():
+def logGen(input):
 # log file
     log = etree.Element("log")
     
@@ -199,6 +199,22 @@ def logGen():
 
     return etree.ElementTree(log)
 
-# pretty string
-logGen().write('testPrint.xml', pretty_print=True)
+def createDocument(filename, transaction_list):
+    log = etree.Element("log")
+    for row in transaction_list:
+        if row['type'] == 'userCommand':
+            input = {
+                'timestamp': str(row['timestamp']),
+                'server': row['server'],
+                'transNum': str(row['transactionNum']),
+                'cmd': row['userCommand'],
+                'user': row['userId'],
+                'stock': row['stockSymbol'],
+                'file': filename,
+                'funds': str(row['amount'])
+            }
+            eTree = userCommandsGen(input)
+            log.append(eTree)
+    tree = etree.ElementTree(log)
+    tree.write(filename+'.xml', pretty_print=True, encoding=None, xml_declaration=True)
 
