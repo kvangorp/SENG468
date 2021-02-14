@@ -1,5 +1,6 @@
 import requests
 from time import time
+from Database2XML import XMLgen
 
 WEBSERVER = 'WS'
 file1 = open('1userWorkLoad.txt', 'r')
@@ -49,14 +50,18 @@ def commandSwitch(command):
     elif command[0] == 'COMMIT_SELL':
         print(command[0])
         commit_sell(command[1])
-	# elif command == 'CANCEL_SELL':
+    elif command[0] == 'CANCEL_SELL':
+        print(command[0])
+        cancel_sell(command[1])
 	# elif command == 'SET_BUY_AMOUNT':
 	# elif command == 'CANCEL_SET_BUY':
 	# elif command == 'SET_BUY_TRIGGER':
 	# elif command == 'SET_SELL_AMOUNT':
 	# elif command == 'SET_SELL_TRIGGER':
 	# elif command == 'CANCEL_SET_SELL':
-	# elif command == 'DUMPLOG':
+    elif command[0] == 'DUMPLOG':
+        print(command[0])
+        dumplog(command[1])
 	# elif command == 'DUMPLOG':
 	# elif command == 'DISPLAY_SUMMARY':
 	
@@ -226,7 +231,40 @@ def commit_sell(userid):
         print(res.json)
     user_command_log(userid, amount, 'COMMIT_SELL', stock)
 
+def cancel_sell(userid):
+    data = {
+        'userId': userid,
+        'userCommand': 'SELL'
+    }
+    res = requests.get('http://localhost:8000/api/transactions/', params=data)
+    print(res)
+    list_of_transactions = res.json()
+    print(list_of_transactions)
+    latest_sell = sorted(list_of_transactions, key=lambda k: k['timestamp'], reverse=True)
+    sell_time = ''
+    if list_of_transactions:
+        sell_time = float(latest_sell[0]['timestamp'])
+    else:
+        return
+    if (time() - sell_time) <= 60.0:
+        user_command_log(userid=userid, command='CANCEL_SELL')
 
+def dumplog(filename):
+    res = requests.get('http://localhost:8000/api/transactions/')
+    for row in res.json():
+        if row['type'] == 'userCommand':
+            input = {
+                'timestamp': str(row['timestamp']),
+                'server': row['server'],
+                'transNum': str(row['transactionNum']),
+                'cmd': row['userCommand'],
+                'user': row['userId'],
+                'stock': row['stockSymbol'],
+                'file': filename.strip(),
+                'funds': str(row['amount'])
+            }
+            eTree = XMLgen.userCommandsGen(input)
+            eTree.write(filename+'.xml', pretty_print=True)
 
 for line in Lines:
     fileLine = line.split(' ')
