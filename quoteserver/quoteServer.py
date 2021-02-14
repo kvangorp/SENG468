@@ -12,7 +12,7 @@ serverSocket = socket(AF_INET, SOCK_STREAM)
 
 # Assign IP address and port number to socket
 host = '127.0.0.1'
-port = 8000
+port = 12345
 serverSocket.bind((host,port))
 serverSocket.listen(5)
 print('Ready to serve... Send quote information')

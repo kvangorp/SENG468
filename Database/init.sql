@@ -7,17 +7,15 @@ DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS triggers;
 
 CREATE TABLE users (   
-    id VARCHAR(20) NOT NULL,
-    balance FLOAT NOT NULL,
-    PRIMARY KEY(id)
-);
+	id VARCHAR(20) NOT NULL,
+	balance FLOAT NOT NULL 
+) engine=ColumnStore;
 
 CREATE TABLE stock_acct (
 	userID VARCHAR(20),
 	stock_symbol VARCHAR(3) NOT NULL,
-	amount INT NOT NULL,
-    PRIMARY KEY(userID)
-);
+	amount INT NOT NULL
+) engine=ColumnStore;
 
 CREATE TABLE transactions (
 	transaction_number BIGINT NOT NULL COMMENT 'autoincrement=1',
@@ -27,9 +25,8 @@ CREATE TABLE transactions (
 	amount FLOAT NOT NULL,
 	price FLOAT NOT NULL,
 	type VARCHAR(3) NOT NULL,
-	crypto_key VARCHAR(20) NOT NULL,
-    PRIMARY KEY(transaction_number)
-);
+	crypto_key VARCHAR(20) NOT NULL
+) engine=ColumnStore;
 
 CREATE TABLE triggers (
 	userID VARCHAR(20) NOT NULL,
@@ -37,6 +34,5 @@ CREATE TABLE triggers (
 	trigger_type VARCHAR(5) NOT NULL,
 	trigger_amount FLOAT NOT NULL,
 	transaction_amount FLOAT NOT NULL,
-    transaction_number INT,
-    PRIMARY KEY(userID)
-);
+    transaction_number INT
+) engine=ColumnStore;

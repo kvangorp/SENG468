@@ -1,11 +1,19 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render
 from rest_framework import generics, status, mixins
 from .serializers import AccountSerializer
 from .models import Account
 from rest_framework.response import Response
+from django.http import Http404
 
+class AccountListView(generics.GenericAPIView, mixins.ListModelMixin):
+    serializer_class = AccountSerializer
+    queryset = Account.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['userId']
 
-## class AccountListView():
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 class AccountDetailView(generics.GenericAPIView):
     serializer_class = AccountSerializer
