@@ -1,49 +1,34 @@
 import sys
 from lxml import etree
 
-def userCommandsGen():
-    complexType = etree.Element("complexType") #xsd:complexType
-    complexType.set("name", "UserCommandType")
-    
-    all1 = etree.SubElement(complexType, "all") #xsd:all
-    
-    timestamp = etree.SubElement(all1, "element") #xsd:element
-    timestamp.set("name", "timestamp")
-    timestamp.set("type", "unixTimeLimits")
+def userCommandsGen(input):
+    commandType = etree.Element("userCommand") #xsd:complexType
+        
+    timestamp = etree.SubElement(commandType, "timestamp") #xsd:element
+    timestamp.text = input['timestamp'] 
 
-    server = etree.SubElement(all1, "element") #xsd:element
-    server.set("name", "server")
-    server.set("type", "xsd:string")
+    server = etree.SubElement(commandType, "server") #xsd:element
+    server.text = input['server']
 
-    transactionNum = etree.SubElement(all1, "element") #xsd:element
-    transactionNum.set("name", "transactionNum")
-    transactionNum.set("type", "xsd:positiveInteger")
+    transactionNum = etree.SubElement(commandType, "transactionNum") #xsd:element
+    transactionNum.text = input['transNum']
 
-    command = etree.SubElement(all1, "element") #xsd:element
-    command.set("name", "command")
-    command.set("type", "commandType")
+    command = etree.SubElement(commandType, "command") #xsd:element
+    command.text = input['cmd']
 
-    username = etree.SubElement(all1, "element") #xsd:element
-    username.set("name", "username")
-    username.set("type", "xsd:string")
-    username.set("minOccurs", "0")
+    username = etree.SubElement(commandType, "username") #xsd:element
+    username.text = input['user']
 
-    stockSymbol = etree.SubElement(all1, "element") #xsd:element
-    stockSymbol.set("name", "stockSymbol")
-    stockSymbol.set("type", "stockSymbolType")
-    stockSymbol.set("minOccurs", "0")
+    stockSymbol = etree.SubElement(commandType, "stockSymbol") #xsd:element
+    stockSymbol.text = input['stock']
 
-    filename = etree.SubElement(all1, "element") #xsd:element
-    filename.set("name", "filename")
-    filename.set("type", "xsd:string")
-    filename.set("minOccurs", "0")
+    filename = etree.SubElement(commandType, "filename") #xsd:element
+    filename.text = input['file']
 
-    funds = etree.SubElement(all1, "element") #xsd:element
-    funds.set("name", "funds")
-    funds.set("type", "xsd:decimal")
-    funds.set("minOccurs", "0")
+    funds = etree.SubElement(commandType, "funds") #xsd:element
+    funds.text = input['funds']
 
-    return etree.ElementTree(complexType)
+    return etree.ElementTree(commandType)
 
 def quoteServerGen():
     complexType = etree.Element("complexType") #xsd:complexType
