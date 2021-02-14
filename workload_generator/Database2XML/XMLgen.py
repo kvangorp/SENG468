@@ -2,278 +2,202 @@ import sys
 from lxml import etree
 
 def userCommandsGen(input):
-    commandType = etree.Element("userCommand") #xsd:complexType
+    commandType = etree.Element("userCommand") 
         
-    timestamp = etree.SubElement(commandType, "timestamp") #xsd:element
+    timestamp = etree.SubElement(commandType, "timestamp") 
     timestamp.text = input['timestamp'] 
 
-    server = etree.SubElement(commandType, "server") #xsd:element
+    server = etree.SubElement(commandType, "server") 
     server.text = input['server']
 
-    transactionNum = etree.SubElement(commandType, "transactionNum") #xsd:element
+    transactionNum = etree.SubElement(commandType, "transactionNum") 
     transactionNum.text = input['transNum']
 
-    command = etree.SubElement(commandType, "command") #xsd:element
+    command = etree.SubElement(commandType, "command") 
     command.text = input['cmd']
 
-    username = etree.SubElement(commandType, "username") #xsd:element
+    username = etree.SubElement(commandType, "username") 
     username.text = input['user']
 
-    stockSymbol = etree.SubElement(commandType, "stockSymbol") #xsd:element
+    stockSymbol = etree.SubElement(commandType, "stockSymbol") 
     stockSymbol.text = input['stock']
 
-    filename = etree.SubElement(commandType, "filename") #xsd:element
+    filename = etree.SubElement(commandType, "filename") 
     filename.text = input['file']
 
-    funds = etree.SubElement(commandType, "funds") #xsd:element
+    funds = etree.SubElement(commandType, "funds") 
     funds.text = input['funds']
 
     return etree.ElementTree(commandType)
 
-def quoteServerGen():
-    complexType = etree.Element("complexType") #xsd:complexType
-    complexType.set("name", "QuoteServerType")
+def quoteServerGen(input):
+    quoteServer = etree.Element("quoteServer")
     
-    all1 = etree.SubElement(complexType, "all") #xsd:all
+    timestamp = etree.SubElement(quoteServer, "timestamp") 
+    timestamp.text = input['timestamp']
+
+    server = etree.SubElement(quoteServer, "server") 
+    server.text = input['server']
+
+    transactionNum = etree.SubElement(quoteServer, "transactionNum") 
+    transactionNum.text = input['transactionNum']
+
+    price = etree.SubElement(quoteServer, "price") 
+    price.text = input['price']
+
+    stockSymbol = etree.SubElement(quoteServer, "stockSymbol") 
+    stockSymbol.text = input['stockSymbol']
+
+    username = etree.SubElement(quoteServer, "username") 
+    username.text = input['username']
+
+    quoteServerTime = etree.SubElement(quoteServer, "quoteServerTime") 
+    quoteServerTime.text = input['quoteServerTime']
+
+    cryptokey = etree.SubElement(quoteServer, "cryptokey") 
+    cryptokey.text = input['cryptokey']
+
+    return etree.ElementTree(quoteServer)
+
+def userAccountGen(input):
+    userAccount = etree.Element("userAccount")
     
-    timestamp = etree.SubElement(all1, "element") #xsd:element
-    timestamp.set("name", "timestamp")
-    timestamp.set("type", "unixTimeLimits")
+    timestamp = etree.SubElement(userAccount, "timestamp") 
+    timestamp.text = input['timestamp']
 
-    server = etree.SubElement(all1, "element") #xsd:element
-    server.set("name", "server")
-    server.set("type", "xsd:string")
+    server = etree.SubElement(userAccount, "server") 
+    server.text = input['server']
 
-    transactionNum = etree.SubElement(all1, "element") #xsd:element
-    transactionNum.set("name", "transactionNum")
-    transactionNum.set("type", "xsd:positiveInteger")
+    transactionNum = etree.SubElement(userAccount, "transactionNum") 
+    transactionNum.text = input['transactionNum']
 
-    price = etree.SubElement(all1, "element") #xsd:element
-    price.set("name", "price")
-    price.set("type", "xsd:decimal")
+    action = etree.SubElement(userAccount, "action") 
+    action.text = input['action']
 
-    stockSymbol = etree.SubElement(all1, "element") #xsd:element
-    stockSymbol.set("name", "stockSymbol")
-    stockSymbol.set("type", "stockSymbolType")
+    username = etree.SubElement(userAccount, "username") 
+    username.text = input['username']
 
-    username = etree.SubElement(all1, "element") #xsd:element
-    username.set("name", "username")
-    username.set("type", "xsd:string")
+    funds = etree.SubElement(userAccount, "funds") 
+    funds.text = input['funds']
 
-    quoteServerTime = etree.SubElement(all1, "element") #xsd:element
-    quoteServerTime.set("name", "quoteServerTime")
-    quoteServerTime.set("type", "xsd:integer")
+    return etree.ElementTree(userAccount)
 
-    cryptokey = etree.SubElement(all1, "element") #xsd:element
-    cryptokey.set("name", "cryptokey")
-    cryptokey.set("type", "xsd:string")
-
-    return etree.ElementTree(complexType)
-
-def userAccountGen():
-    complexType = etree.Element("complexType") #xsd:complexType
-    complexType.set("name", "AccountTransactionType")
+def systemEventGen(input):
+    systemEvent = etree.Element("systemEvent")
     
-    all1 = etree.SubElement(complexType, "all") #xsd:all
-    
-    timestamp = etree.SubElement(all1, "element") #xsd:element
-    timestamp.set("name", "timestamp")
-    timestamp.set("type", "unixTimeLimits")
+    timestamp = etree.SubElement(systemEvent, "timestamp") 
+    timestamp.text = input['timestamp']
 
-    server = etree.SubElement(all1, "element") #xsd:element
-    server.set("name", "server")
-    server.set("type", "xsd:string")
+    server = etree.SubElement(systemEvent, "server") 
+    server.text = input['server']
 
-    transactionNum = etree.SubElement(all1, "element") #xsd:element
-    transactionNum.set("name", "transactionNum")
-    transactionNum.set("type", "xsd:positiveInteger")
+    transactionNum = etree.SubElement(systemEvent, "transactionNum") 
+    transactionNum.text = input['transactionNum']
 
-    action = etree.SubElement(all1, "element") #xsd:element
-    action.set("name", "action")
-    action.set("type", "xsd:string")
+    command = etree.SubElement(systemEvent, "command") 
+    command.text = input['command']
 
-    username = etree.SubElement(all1, "element") #xsd:element
-    username.set("name", "username")
-    username.set("type", "xsd:string")
+    username = etree.SubElement(systemEvent, "username") 
+    username.text = input['username']
 
-    funds = etree.SubElement(all1, "element") #xsd:element
-    funds.set("name", "funds")
-    funds.set("type", "xsd:decimal")
+    stockSymbol = etree.SubElement(systemEvent, "stockSymbol") 
+    stockSymbol.text = input['stockSymbol']
 
-    return etree.ElementTree(complexType)
+    filename = etree.SubElement(systemEvent, "filename") 
+    filename.text = input['filename']
 
-def systemEventGen():
-    complexType = etree.Element("complexType") #xsd:complexType
-    complexType.set("name", "SystemEventType")
-    
-    all1 = etree.SubElement(complexType, "all") #xsd:all
-    
-    timestamp = etree.SubElement(all1, "element") #xsd:element
-    timestamp.set("name", "timestamp")
-    timestamp.set("type", "unixTimeLimits")
+    funds = etree.SubElement(systemEvent, "funds") 
+    funds.text = input['funds']
 
-    server = etree.SubElement(all1, "element") #xsd:element
-    server.set("name", "server")
-    server.set("type", "xsd:string")
-
-    transactionNum = etree.SubElement(all1, "element") #xsd:element
-    transactionNum.set("name", "transactionNum")
-    transactionNum.set("type", "xsd:positiveInteger")
-
-    command = etree.SubElement(all1, "element") #xsd:element
-    command.set("name", "command")
-    command.set("type", "commandType")
-
-    username = etree.SubElement(all1, "element") #xsd:element
-    username.set("name", "username")
-    username.set("type", "xsd:string")
-
-    stockSymbol = etree.SubElement(all1, "element") #xsd:element
-    stockSymbol.set("name", "stockSymbol")
-    stockSymbol.set("type", "stockSymbolType")
-
-    filename = etree.SubElement(all1, "element") #xsd:element
-    filename.set("name", "filename")
-    filename.set("type", "xsd:string")
-
-    funds = etree.SubElement(all1, "element") #xsd:element
-    funds.set("name", "funds")
-    funds.set("type", "xsd:decimal")
-
-    return etree.ElementTree(complexType)
+    return etree.ElementTree(systemEvent)
 
 def errorEventGen():
-    complexType = etree.Element("complexType") #xsd:complexType
-    complexType.set("name", "ErrorEventType")
+    errorEvent = etree.Element("errorEvent")
     
-    all1 = etree.SubElement(complexType, "all") #xsd:all
-    
-    timestamp = etree.SubElement(all1, "element") #xsd:element
-    timestamp.set("name", "timestamp")
-    timestamp.set("type", "unixTimeLimits")
+    timestamp = etree.SubElement(errorEvent, "eletimestampment") 
+    timestamp.text = input['eletimestampment']
 
-    server = etree.SubElement(all1, "element") #xsd:element
-    server.set("name", "server")
-    server.set("type", "xsd:string")
+    server = etree.SubElement(errorEvent, "server") 
+    server.text = input['server']
 
-    transactionNum = etree.SubElement(all1, "element") #xsd:element
-    transactionNum.set("name", "transactionNum")
-    transactionNum.set("type", "xsd:positiveInteger")
+    transactionNum = etree.SubElement(errorEvent, "transactionNum") 
+    transactionNum.text = input['transactionNum']
 
-    command = etree.SubElement(all1, "element") #xsd:element
-    command.set("name", "command")
-    command.set("type", "commandType")
+    command = etree.SubElement(errorEvent, "command") 
+    command.text = input['command']
 
-    username = etree.SubElement(all1, "element") #xsd:element
-    username.set("name", "username")
-    username.set("type", "xsd:string")
-    username.set("minOccurs", "0")
+    username = etree.SubElement(errorEvent, "username") 
+    username.text = input['username']
 
-    stockSymbol = etree.SubElement(all1, "element") #xsd:element
-    stockSymbol.set("name", "stockSymbol")
-    stockSymbol.set("type", "stockSymbolType")
-    stockSymbol.set("minOccurs", "0")
+    stockSymbol = etree.SubElement(errorEvent, "stockSymbol") 
+    stockSymbol.text = input['stockSymbol']
 
-    filename = etree.SubElement(all1, "element") #xsd:element
-    filename.set("name", "filename")
-    filename.set("type", "xsd:string")
-    filename.set("minOccurs", "0")
+    filename = etree.SubElement(errorEvent, "filename") 
+    filename.text = input['filename']
 
-    funds = etree.SubElement(all1, "element") #xsd:element
-    funds.set("name", "funds")
-    funds.set("type", "xsd:decimal")
-    funds.set("minOccurs", "0")
+    funds = etree.SubElement(errorEvent, "funds") 
+    funds.text = input['funds']
 
-    errorMessage = etree.SubElement(all1, "element") #xsd:element
-    errorMessage.set("name", "errorMessage")
-    errorMessage.set("type", "xsd:string")
-    errorMessage.set("minOccurs", "0")
+    errorMessage = etree.SubElement(errorEvent, "errorMessage") 
+    errorMessage.text = input['errorMessage']
 
-    return etree.ElementTree(complexType)
+    return etree.ElementTree(errorEvent)
 
 def debugEventGen():
-    complexType = etree.Element("complexType") #xsd:complexType
-    complexType.set("name", "DebugType")
+    debugEvent = etree.Element("debugEvent") 
     
-    all1 = etree.SubElement(complexType, "all") #xsd:all
-    
-    timestamp = etree.SubElement(all1, "element") #xsd:element
-    timestamp.set("name", "timestamp")
-    timestamp.set("type", "unixTimeLimits")
+    timestamp = etree.SubElement(debugEvent, "timestamp") 
+    timestamp.text = input['timestamp']
 
-    server = etree.SubElement(all1, "element") #xsd:element
-    server.set("name", "server")
-    server.set("type", "xsd:string")
+    server = etree.SubElement(debugEvent, "server") 
+    server.text = input['server']
 
-    transactionNum = etree.SubElement(all1, "element") #xsd:element
-    transactionNum.set("name", "transactionNum")
-    transactionNum.set("type", "xsd:positiveInteger")
+    transactionNum = etree.SubElement(debugEvent, "transactionNum") 
+    transactionNum.text = input['transactionNum']
 
-    command = etree.SubElement(all1, "element") #xsd:element
-    command.set("name", "command")
-    command.set("type", "commandType")
+    command = etree.SubElement(debugEvent, "command") 
+    command.text = input['command']
 
-    username = etree.SubElement(all1, "element") #xsd:element
-    username.set("name", "username")
-    username.set("type", "xsd:string")
-    username.set("minOccurs", "0")
+    username = etree.SubElement(debugEvent, "username") 
+    username.text = input['username']
 
-    stockSymbol = etree.SubElement(all1, "element") #xsd:element
-    stockSymbol.set("name", "stockSymbol")
-    stockSymbol.set("type", "stockSymbolType")
-    stockSymbol.set("minOccurs", "0")
+    stockSymbol = etree.SubElement(debugEvent, "stockSymbol") 
+    stockSymbol.text = input['stockSymbol']
 
-    filename = etree.SubElement(all1, "element") #xsd:element
-    filename.set("name", "filename")
-    filename.set("type", "xsd:string")
-    filename.set("minOccurs", "0")
+    filename = etree.SubElement(debugEvent, "filename") 
+    filename.text = input['filename']
 
-    funds = etree.SubElement(all1, "element") #xsd:element
-    funds.set("name", "funds")
-    funds.set("type", "xsd:decimal")
-    funds.set("minOccurs", "0")
+    funds = etree.SubElement(debugEvent, "funds") 
+    funds.text = input['funds']
 
-    debugMessage = etree.SubElement(all1, "element") #xsd:element
-    debugMessage.set("name", "debugMessage")
-    debugMessage.set("type", "xsd:string")
-    debugMessage.set("minOccurs", "0")
+    debugMessage = etree.SubElement(debugEvent, "debugMessage") 
+    debugMessage.text = input['debugMessage']
 
-    return etree.ElementTree(complexType)
+    return etree.ElementTree(debugEvent)
 
 def logGen():
 # log file
-    complexType = etree.Element("complexType") #xsd:complexType
-    complexType.set("name", "LogType")
+    log = etree.Element("log")
     
-    choice = etree.SubElement(complexType, "choice") #xsd:choice
-    choice.set("minOccurs", "0")
-    choice.set("maxOccurs", "unbounded")
-    
-    userCommand = etree.SubElement(choice, "element") #xsd:element
-    userCommand.set("name", "userCommand")
-    userCommand.set("type", "UserCommandType")
+    userCommand = etree.SubElement(log, "userCommand") 
+    userCommand.text = input['userCommand']
 
-    quoteServer = etree.SubElement(choice, "element") #xsd:element
-    quoteServer.set("name", "quoteServer")
-    quoteServer.set("type", "QuoteServerType")
+    quoteServer = etree.SubElement(log, "quoteServer") 
+    quoteServer.text = input['quoteServer']
 
-    accountTransaction = etree.SubElement(choice, "element") #xsd:element
-    accountTransaction.set("name", "accountTransaction")
-    accountTransaction.set("type", "AccountTransactionType")
+    accountTransaction = etree.SubElement(log, "accountTransaction") 
+    accountTransaction.text = input['accountTransaction']
 
-    systemEvent = etree.SubElement(choice, "element") #xsd:element
-    systemEvent.set("name", "systemEvent")
-    systemEvent.set("type", "SystemEventType")
+    systemEvent = etree.SubElement(log, "systemEvent") 
+    systemEvent.text = input['systemEvent']
 
-    errorEvent = etree.SubElement(choice, "element") #xsd:element
-    errorEvent.set("name", "errorEvent")
-    errorEvent.set("type", "ErrorEventType")
+    errorEvent = etree.SubElement(log, "errorEvent") 
+    errorEvent.text = input['errorEvent']
 
-    debugEvent = etree.SubElement(choice, "element") #xsd:element
-    debugEvent.set("name", "debugEvent")
-    debugEvent.set("type", "DebugType")
+    debugEvent = etree.SubElement(log, "debugEvent") 
+    debugEvent.text = input['debugEvent']
 
-    return etree.ElementTree(complexType)
+    return etree.ElementTree(log)
 
 # pretty string
 logGen().write('testPrint.xml', pretty_print=True)
