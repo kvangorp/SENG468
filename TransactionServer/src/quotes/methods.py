@@ -13,7 +13,7 @@ def quoteClient(sym,id):
     # Connect the socket
     s.connect(('127.0.0.1',12345))
     # Send the user's query
-    s.send('S,oY01WVirLr'.encode())
+    s.send('{},{}'.format(sym,id).encode())
     #s.send(fromUser)
 
 
