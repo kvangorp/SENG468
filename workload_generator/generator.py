@@ -43,8 +43,8 @@ def commandSwitch(command):
     elif command[0] == 'CANCEL_BUY':
         print(command[0])
         cancel_buy(command[1])
-    # elif command == 'SELL':
-    #     sell(command[1], command[2], command[3])
+    elif command[0] == 'SELL':
+         sell(command[1], command[2], command[3]) #userId, symbol, dollaramount
 	# elif command == 'COMMIT_SELL':
 	# elif command == 'CANCEL_SELL':
 	# elif command == 'SET_BUY_AMOUNT':
@@ -166,7 +166,7 @@ def commit_buy(userid):
             'amount': amount
         }
         print(data)
-        res = requests.put(f'http://localhost:8000/api/stocks/{userid}/{stock}/', json=data)
+        res = requests.put(f'http://localhost:8000/api/stocks/buy/{userid}/{stock}/', json=data)
         print(res.json)
     user_command_log(userid, amount, 'COMMIT_BUY', stock)
 
@@ -188,8 +188,25 @@ def cancel_buy(userid):
     if (time() - buy_time) <= 60.0:
         user_command_log(userid=userid, command='CANCEL_BUY')
 
-def sell(userid, stock, dollar_amount):
-    return
+def sell(userid, stock, amount):
+    res = requests.get(f'http://localhost:8000/api/stocks/sell/{userid}/{stock}/')
+    print(res)
+    account = res.json()
+    print(account)
+
+    stock_quote = quote(userid, stock)
+    shares = float(amount)/stock_quote
+    
+
+    if account['shares'] < shares:
+        print("yeah no")
+    else:
+        user_command_log(userid, amount, 'SELL', stock)
+
+
+
+
+
 
 for line in Lines:
     fileLine = line.split(' ')

@@ -20,8 +20,31 @@ class StockDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
     serializer_class = StockSerializer
     queryset = Stock.objects.all()
 
+    # def get_quote(self,id,sym):
+    #     data = quoteClient(sym,id)
+    #     elements = data.split(',')
+ 
+    #     quoteResult = Quote(
+    #         quote=float(elements[0]),
+    #         stockSymbol=elements[1],
+    #         userId=elements[2],
+    #         timestamp=float(elements[3]),
+    #         cryptokey=elements[4]
+    #     )
+    #     return quoteResult
+
+    # def get(self, request, id,sym): #return json of pk
+    #     quote = self.get_quote(id,sym)
+    #     serializer = QuoteSerializer(quote)
+    #     return Response(serializer.data)
+    
+    def get(self,request,action,userId,stock):
+        stock = Stock.objects.filter(userId=userId,stockSymbol=stock).first()
+        serializer = StockSerializer(stock)
+        return Response(serializer.data)
+
     #TODO: add check for buy vs sell
-    def put(self, request, userId, stock):
+    def put(self, request,action, userId, stock):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
@@ -50,14 +73,22 @@ class StockDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
                 stockSymbol=stockSymbol,
                 shares=0.0
             )
+        if action is 'buy':
+            # Decrement user balance amount
+            userAccount.balance -= amount
+            userAccount.save()
 
-        # Decrement user balance amount
-        userAccount.balance -= amount
-        userAccount.save()
+            # Add stock shares
+            stockAccount.shares += shares
+            stockAccount.save()
+        else:
+            # Decrement user balance amount
+            userAccount.balance += amount
+            userAccount.save()
 
-        # Add stock shares
-        stockAccount.shares += shares
-        stockAccount.save()
+            # Add stock shares
+            stockAccount.shares -= shares
+            stockAccount.save()
 
         # Make sure request can be serialized
         serializer = StockSerializer(stockAccount)

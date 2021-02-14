@@ -31,8 +31,21 @@ class AccountDetailView(generics.GenericAPIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
-        account = self.get_object(pk)
+        #account = self.get_object(pk)
+        
+        userId = request.data.get("userId")
+        # Find account
+        account = Account.objects.filter(
+            userId=userId,
+        ).first()
 
+        if account is None:
+            account = Account(
+                userId=userId,
+                password='hey',
+                balance=0.0,
+                pending=0.0,
+            )
         # Make sure request can be serialized
         serializer = AccountSerializer(account, data=request.data)
         if not serializer.is_valid():
