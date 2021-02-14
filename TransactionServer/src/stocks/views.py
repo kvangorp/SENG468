@@ -44,7 +44,7 @@ class StockDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
         return Response(serializer.data)
 
     #TODO: add check for buy vs sell
-    def put(self, request,action, userId, stock):
+    def put(self, request, action, userId, stock):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
@@ -73,7 +73,7 @@ class StockDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
                 stockSymbol=stockSymbol,
                 shares=0.0
             )
-        if action is 'buy':
+        if action == 'buy':
             # Decrement user balance amount
             userAccount.balance -= amount
             userAccount.save()
