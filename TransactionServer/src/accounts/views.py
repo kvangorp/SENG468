@@ -61,7 +61,7 @@ class AccountDetailView(generics.GenericAPIView):
             timestamp=float(time()),
             server='TS',
             transactionNum=1, #TODO
-            userCommand='ADD',
+            userCommand='add',
             userId=userId,
             amount=account.balance
         )

@@ -40,7 +40,7 @@ def quoteServerGen(input):
     server.text = input['server']
 
     transactionNum = etree.SubElement(quoteServer, "transactionNum") 
-    transactionNum.text = input['transactionNum']
+    transactionNum.text = input['transNum']
 
     price = etree.SubElement(quoteServer, "price") 
     price.text = input['price']
@@ -49,38 +49,38 @@ def quoteServerGen(input):
     stockSymbol.text = input['stockSymbol']
 
     username = etree.SubElement(quoteServer, "username") 
-    username.text = input['username']
+    username.text = input['user']
 
     quoteServerTime = etree.SubElement(quoteServer, "quoteServerTime") 
-    quoteServerTime.text = input['quoteServerTime']
+    quoteServerTime.text = input['quoteTime']
 
     cryptokey = etree.SubElement(quoteServer, "cryptokey") 
-    cryptokey.text = input['cryptokey']
+    cryptokey.text = input['cryptoKey']
 
-    return etree.ElementTree(quoteServer)
+    return quoteServer
 
 def userAccountGen(input):
-    userAccount = etree.Element("userAccount")
+    accountTransaction = etree.Element("accountTransaction")
     
-    timestamp = etree.SubElement(userAccount, "timestamp") 
+    timestamp = etree.SubElement(accountTransaction, "timestamp") 
     timestamp.text = input['timestamp']
 
-    server = etree.SubElement(userAccount, "server") 
+    server = etree.SubElement(accountTransaction, "server") 
     server.text = input['server']
 
-    transactionNum = etree.SubElement(userAccount, "transactionNum") 
-    transactionNum.text = input['transactionNum']
+    transactionNum = etree.SubElement(accountTransaction, "transactionNum") 
+    transactionNum.text = input['transNum']
 
-    action = etree.SubElement(userAccount, "action") 
-    action.text = input['action']
+    action = etree.SubElement(accountTransaction, "action") 
+    action.text = input['userCommand']
 
-    username = etree.SubElement(userAccount, "username") 
-    username.text = input['username']
+    username = etree.SubElement(accountTransaction, "username") 
+    username.text = input['user']
 
-    funds = etree.SubElement(userAccount, "funds") 
-    funds.text = input['funds']
+    funds = etree.SubElement(accountTransaction, "funds") 
+    funds.text = input['amount']
 
-    return etree.ElementTree(userAccount)
+    return accountTransaction
 
 def systemEventGen(input):
     systemEvent = etree.Element("systemEvent")
@@ -214,6 +214,30 @@ def createDocument(filename, transaction_list):
                 'funds': str(row['amount'])
             }
             eTree = userCommandsGen(input)
+            log.append(eTree)
+        elif row['type'] == 'quoteServer':
+            input = {
+                'timestamp': str(row['timestamp']),
+                'server': row['server'],
+                'transNum': str(row['transactionNum']),
+                'price': str(row['price']),
+                'stockSymbol': row['stockSymbol'],
+                'user': row['userId'],
+                'quoteTime': str(row['quoteServerTime']),
+                'cryptoKey': row['cryptoKey']
+            }
+            eTree = quoteServerGen(input)
+            log.append(eTree)
+        elif row['type'] == 'accountTransaction':
+            input = {
+                'timestamp': str(row['timestamp']),
+                'server': row['server'],
+                'transNum': str(row['transactionNum']),
+                'userCommand': row['userCommand'],
+                'user': row['userId'],
+                'amount': str(row['amount']),
+            }
+            eTree = userAccountGen(input)
             log.append(eTree)
     tree = etree.ElementTree(log)
     tree.write(filename+'.xml', pretty_print=True, encoding=None, xml_declaration=True)
