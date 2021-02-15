@@ -1,6 +1,6 @@
 import requests
 from time import time
-from Database2XML import XMLgen
+from database2xml import XMLgen
 from lxml import etree
 
 WEBSERVER = 'WS'
