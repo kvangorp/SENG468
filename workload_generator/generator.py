@@ -1,6 +1,7 @@
 import requests
 from time import time
-from Database2XML import XMLgen
+from database2xml import XMLgen
+from lxml import etree
 
 WEBSERVER = 'WS'
 file1 = open('1userWorkLoad.txt', 'r')
@@ -252,20 +253,8 @@ def cancel_sell(userid):
 def dumplog(filename):
     filename = filename.strip()
     res = requests.get('http://localhost:8000/api/transactions/')
-    for row in res.json():
-        if row['type'] == 'userCommand':
-            input = {
-                'timestamp': str(row['timestamp']),
-                'server': row['server'],
-                'transNum': str(row['transactionNum']),
-                'cmd': row['userCommand'],
-                'user': row['userId'],
-                'stock': row['stockSymbol'],
-                'file': filename,
-                'funds': str(row['amount'])
-            }
-            eTree = XMLgen.userCommandsGen(input)
-            eTree.write(filename+'.xml', pretty_print=True)
+    XMLgen.createDocument(filename, res.json())
+    
 
 for line in Lines:
     fileLine = line.split(' ')

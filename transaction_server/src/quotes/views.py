@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from .serializers import QuoteSerializer
 from .models import Quote
+from transactions.models import Transactions
 from rest_framework import generics, status, mixins
 from rest_framework.response import Response
 from django.http import Http404
@@ -16,7 +17,7 @@ class QuoteView(generics.GenericAPIView):
     def get_quote(self,id,sym):
         data = quoteClient(sym,id)
         elements = data.split(',')
- 
+        print(elements)
         quoteResult = Quote(
             quote=float(elements[0]),
             stockSymbol=elements[1],
@@ -24,6 +25,19 @@ class QuoteView(generics.GenericAPIView):
             timestamp=float(elements[3]),
             cryptokey=elements[4]
         )
+
+        transaction = Transactions(
+            type="quoteServer",
+            timestamp=float(elements[3]),
+            server='QS',
+            transactionNum=1, #TODO
+            price=float(elements[0]),
+            stockSymbol=elements[1],
+            userId=elements[2],
+            quoteServerTime=float(elements[3]),
+            cryptoKey=elements[4]
+        )
+        transaction.save()
         return quoteResult
 
     def get(self, request, id,sym): #return json of pk

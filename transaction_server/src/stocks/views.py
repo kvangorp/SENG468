@@ -6,6 +6,9 @@ from rest_framework.response import Response
 from .serializers import StockSerializer
 from stocks.models import Stock
 from accounts.models import Account
+from transactions.models import Transactions
+from time import time
+
 
 class StockListView(generics.GenericAPIView, mixins.ListModelMixin):
     serializer_class = StockSerializer
@@ -43,7 +46,6 @@ class StockDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
         serializer = StockSerializer(stock)
         return Response(serializer.data)
 
-    #TODO: add check for buy vs sell
     def put(self, request, action, userId, stock):
         # Get request data
         userId = request.data.get("userId")
@@ -81,6 +83,17 @@ class StockDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
             # Add stock shares
             stockAccount.shares += shares
             stockAccount.save()
+
+            transaction = Transactions(
+                type="accountTransaction",
+                timestamp=float(time()),
+                server='TS',
+                transactionNum=1, #TODO
+                userCommand='remove',
+                userId=userId,
+                amount=amount
+            )
+            transaction.save()
         else:
             # Decrement user balance amount
             userAccount.balance += amount
@@ -89,6 +102,17 @@ class StockDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
             # Add stock shares
             stockAccount.shares -= shares
             stockAccount.save()
+
+            transaction = Transactions(
+                type="accountTransaction",
+                timestamp=float(time()),
+                server='TS',
+                transactionNum=1, #TODO
+                userCommand='add',
+                userId=userId,
+                amount=amount
+            )
+            transaction.save()
 
         # Make sure request can be serialized
         serializer = StockSerializer(stockAccount)

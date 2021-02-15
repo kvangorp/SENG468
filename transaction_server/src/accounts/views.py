@@ -3,8 +3,10 @@ from django.shortcuts import render
 from rest_framework import generics, status, mixins
 from .serializers import AccountSerializer
 from .models import Account
+from transactions.models import Transactions
 from rest_framework.response import Response
 from django.http import Http404
+from time import time
 
 class AccountListView(generics.GenericAPIView, mixins.ListModelMixin):
     serializer_class = AccountSerializer
@@ -32,7 +34,6 @@ class AccountDetailView(generics.GenericAPIView):
 
     def put(self, request, pk):
         #account = self.get_object(pk)
-        
         userId = request.data.get("userId")
         # Find account
         account = Account.objects.filter(
@@ -46,24 +47,23 @@ class AccountDetailView(generics.GenericAPIView):
                 balance=0.0,
                 pending=0.0,
             )
+
         # Make sure request can be serialized
         serializer = AccountSerializer(account, data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Save updated trigger
+        # Save updated account
         serializer.save()
+
+        transaction = Transactions(
+            type="accountTransaction",
+            timestamp=float(time()),
+            server='TS',
+            transactionNum=1, #TODO
+            userCommand='add',
+            userId=userId,
+            amount=account.balance
+        )
+        transaction.save()
         return Response(serializer.data)
-
-    # def AddFunds(userId, cash):
-    # # Find the user account we want to update
-    # params = {"userId" : userId}
-    # resp3 = requests.get('http://localhost:8000/api/accounts/', params=params)
-    # account = resp3.json()[0]
-    # triggerId = trigger["id"]
-
-    # # Update trigger record
-    # account["balance"] = cash
-    # resp4 = requests.put(f'http://localhost:8000/api/account/{userId}/', json=account)
-    # ##update transaction list
-    # print(f"Response after updating trigger with trigger point for ABC stock: {resp4.json()}")
