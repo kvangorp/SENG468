@@ -1,9 +1,10 @@
 from django.urls import path
-from .views.views import *
+from .views.account_views import *
+from .views.quote_views import *
 from .views.buy_views import *
 from .views.sell_views import *
-from .views.buy_triggers import *
-from .views.sell_triggers import *
+from .views.buy_trigger_views import *
+from .views.sell_trigger_views import *
 
 urlpatterns = [
 

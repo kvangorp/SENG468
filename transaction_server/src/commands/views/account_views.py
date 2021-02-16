@@ -38,14 +38,10 @@ class AddView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class QuoteView(APIView):
-    def post(self, request):
-        print('quote')
-
-
 class DumplogView(APIView):
     def post(self, request):
         print('dumplog')
+
 
 class DisplaySummaryView(APIView):
     def post(self, request):
