@@ -69,19 +69,12 @@ def commandSwitch(command):
 
 def add(userid, amount):
     data = {
-        'userId': userid
+        'userId': userid,
+        'amount': amount
     }
-    res = requests.get('http://localhost:8000/api/accounts/', params=data)
+    res = requests.post('http://localhost:8000/api/commands/add/', json=data)
     print(res)
-    account = res.json()[0]
-    resId = account['id']
-    print(resId)
-    account['balance'] += float(amount)
-    print(account)
-    res1 = requests.put(f'http://localhost:8000/api/accounts/{resId}/', json=account)
-    print(res1)
-    #log
-    user_command_log(userid, amount, 'ADD')
+    # user_command_log(userid, amount, 'ADD')
 
 def quote(userid, stock):
     res = requests.get(f'http://localhost:8000/api/quotes/{userid}/{stock}/')
