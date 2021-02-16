@@ -89,13 +89,13 @@ def add(userid, amount):
     user_command_log(userid, amount, 'ADD')
 
 def quote(userid, stock):
-    res = requests.get(f'http://localhost:8000/api/quotes/{userid}/{stock}/')
-    quote = res.json()['quote']
-    timestamp = res.json()['timestamp']
-    cryptokey = res.json()['cryptokey']
-    #log
+    data = {
+        'userId': userid,
+        'stockSymbol': stock
+    }
+    res = requests.post('http://localhost:8000/api/commands/quote/', json=data)
+    print('Returned quote: ', res.json())
     user_command_log(userid, 0, 'QUOTE', stock)
-    return quote
 
 def buy(userid, stock, dollar_amount):
     data = {
