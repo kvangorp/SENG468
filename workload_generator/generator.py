@@ -63,9 +63,15 @@ def commandSwitch(command):
     elif command[0] == 'SET_BUY_TRIGGER':
         print(command[0])
         set_buy_trigger(command[1], command[2], command[3])
-	# elif command[0] == 'SET_SELL_AMOUNT':
-	# elif command[0] == 'SET_SELL_TRIGGER':
-	# elif command[0] == 'CANCEL_SET_SELL':
+    elif command[0] == 'SET_SELL_AMOUNT':
+        print(command[0])
+        set_sell_ammount(command[1], command[2], command[3])
+    elif command[0] == 'SET_SELL_TRIGGER':
+        print(command[0])
+        set_sell_trigger(command[1], command[2], command[3])
+    elif command[0] == 'CANCEL_SET_SELL':
+        print(command[0])
+        cancel_set_sell(command[1], command[2])
     elif command[0] == 'DUMPLOG':
         print(command[0])
         dumplog(command[1])
@@ -277,6 +283,35 @@ def set_buy_trigger(userId, stockSymbol, dollar_amount):
     res = requests.post(f'http://localhost:8000/api/commands/set_buy_trigger/', json=data)
     print(res)
     user_command_log(userid=userId, command='SET_BUY_TRIGGER', amount=dollar_amount)
+
+def set_sell_ammount(userId, stockSymbol, stock_amount):
+    data = {
+        'userId': userId,
+        'stockSymbol': stockSymbol,
+        'amount': stock_amount
+    }
+    res = requests.post(f'http://localhost:8000/api/commands/set_sell_amount/', json=data)
+    print(res)
+    user_command_log(userid=userId, command='SET_SELL_AMOUNT', amount=stock_amount)
+
+def set_sell_trigger(userId, stockSymbol, dollar_amount):
+    data = {
+        'userId': userId,
+        'stockSymbol': stockSymbol,
+        'amount': dollar_amount
+    }
+    res = requests.post(f'http://localhost:8000/api/commands/set_sell_trigger/', json=data)
+    print(res)
+    user_command_log(userid=userId, command='SET_SELL_TRIGGER', amount=dollar_amount)
+
+def cancel_set_sell(userId, stockSymbol):
+    data = {
+        'userId': userId,
+        'stockSymbol': stockSymbol
+    }
+    res = requests.post(f'http://localhost:8000/api/commands/cancel_set_sell/', json=data)
+    print(res)
+    user_command_log(userid=userId, command='CANCEL_SET_SELL')
 
 def dumplog(filename):
     filename = filename.strip()

@@ -18,6 +18,7 @@ class Stock(models.Model):
     userId = models.CharField(max_length=50)
     stockSymbol = models.CharField(max_length=50, null=False)
     shares = models.FloatField(null=False)
+    reserved =  models.FloatField(blank=True, default=0.0)
     #TODO: add constraint for userId and stockSymbol
 
 class Trigger(models.Model):
