@@ -54,12 +54,18 @@ def commandSwitch(command):
     elif command[0] == 'CANCEL_SELL':
         print(command[0])
         cancel_sell(command[1])
-	# elif command == 'SET_BUY_AMOUNT':
-	# elif command == 'CANCEL_SET_BUY':
-	# elif command == 'SET_BUY_TRIGGER':
-	# elif command == 'SET_SELL_AMOUNT':
-	# elif command == 'SET_SELL_TRIGGER':
-	# elif command == 'CANCEL_SET_SELL':
+    elif command[0] == 'SET_BUY_AMOUNT':
+        print(command[0])
+        set_buy_ammount(command[1], command[2], command[3])
+    elif command[0] == 'CANCEL_SET_BUY':
+        print(command[0])
+        cancel_set_buy(command[1], command[2])
+    elif command[0] == 'SET_BUY_TRIGGER':
+        print(command[0])
+        set_buy_trigger(command[1], command[2], command[3])
+	# elif command[0] == 'SET_SELL_AMOUNT':
+	# elif command[0] == 'SET_SELL_TRIGGER':
+	# elif command[0] == 'CANCEL_SET_SELL':
     elif command[0] == 'DUMPLOG':
         print(command[0])
         dumplog(command[1])
@@ -74,7 +80,7 @@ def add(userid, amount):
     }
     res = requests.post('http://localhost:8000/api/commands/add/', json=data)
     print(res)
-    # user_command_log(userid, amount, 'ADD')
+    user_command_log(userid, amount, 'ADD')
 
 def quote(userid, stock):
     res = requests.get(f'http://localhost:8000/api/quotes/{userid}/{stock}/')
@@ -242,6 +248,35 @@ def cancel_sell(userid):
         return
     if (time() - sell_time) <= 60.0:
         user_command_log(userid=userid, command='CANCEL_SELL')
+
+def set_buy_ammount(userId, stockSymbol, dollar_amount):
+    data = {
+        'userId': userId,
+        'stockSymbol': stockSymbol,
+        'amount': dollar_amount
+    }
+    res = requests.post(f'http://localhost:8000/api/commands/set_buy_amount/', json=data)
+    print(res)
+    user_command_log(userid=userId, command='SET_BUY_AMOUNT', amount=dollar_amount)
+
+def cancel_set_buy(userId, stockSymbol):
+    data = {
+        'userId': userId,
+        'stockSymbol': stockSymbol
+    }
+    res = requests.post(f'http://localhost:8000/api/commands/cancel_set_buy/', json=data)
+    print(res)
+    user_command_log(userid=userId, command='CANCEL_SET_BUY')
+
+def set_buy_trigger(userId, stockSymbol, dollar_amount):
+    data = {
+        'userId': userId,
+        'stockSymbol': stockSymbol,
+        'amount': dollar_amount
+    }
+    res = requests.post(f'http://localhost:8000/api/commands/set_buy_trigger/', json=data)
+    print(res)
+    user_command_log(userid=userId, command='SET_BUY_TRIGGER', amount=dollar_amount)
 
 def dumplog(filename):
     filename = filename.strip()
