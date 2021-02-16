@@ -99,17 +99,13 @@ def quote(userid, stock):
 
 def buy(userid, stock, dollar_amount):
     data = {
-        'userId': userid
+        'userId': userid,
+        'stockSymbol': stock,
+        'amount': dollar_amount
     }
-    res = requests.get('http://localhost:8000/api/accounts/', params=data)
+    res = requests.post('http://localhost:8000/api/commands/buy/', json=data)
     print(res)
-    account = res.json()[0]
-    #check timestamp in log
-
-    if account['balance'] < float(dollar_amount):
-        print("yeah no")
-    else:
-        user_command_log(userid, dollar_amount, 'BUY', stock)
+    user_command_log(userid, dollar_amount, 'BUY', stock)
 
 def commit_checker(userid, command):
     data = {
@@ -173,38 +169,20 @@ def commit_checker(userid, command):
 
 #TODO: add status field to buy commands: pending, commited, cancelled
 def commit_buy(userid):
-    is_committable, stock, amount = commit_checker(userid, 'BUY')
-    if is_committable:
-        stock_quote = quote(userid, stock)
-        shares = amount/stock_quote
-        data = {
-            'userId': userid,
-            'stockSymbol': stock,
-            'shares': shares,
-            'amount': amount
-        }
-        print(data)
-        res = requests.put(f'http://localhost:8000/api/stocks/buy/{userid}/{stock}/', json=data)
-        print(res.json)
-    user_command_log(userid, amount, 'COMMIT_BUY', stock)
+    data = {
+        'userId': userid
+    }
+    res = requests.post('http://localhost:8000/api/commands/commit_buy/', json=data)
+    print(res)
+    user_command_log(userid, 0.0, 'COMMIT_BUY', '') 
 
 def cancel_buy(userid):
     data = {
-        'userId': userid,
-        'userCommand': 'BUY'
+        'userId': userid
     }
-    res = requests.get('http://localhost:8000/api/transactions/', params=data)
+    res = requests.post('http://localhost:8000/api/commands/cancel_buy/', json=data)
     print(res)
-    list_of_transactions = res.json()
-    print(list_of_transactions)
-    latest_buy = sorted(list_of_transactions, key=lambda k: k['timestamp'], reverse=True)
-    buy_time = ''
-    if list_of_transactions:
-        buy_time = float(latest_buy[0]['timestamp'])
-    else:
-        return
-    if (time() - buy_time) <= 60.0:
-        user_command_log(userid=userid, command='CANCEL_BUY')
+    user_command_log(userid=userid, command='CANCEL_BUY') 
 
 def sell(userid, stock, amount):
     res = requests.get(f'http://localhost:8000/api/stocks/sell/{userid}/{stock}/')
