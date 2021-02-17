@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from ..utils import get_quote
+from transactions.models import Transactions
 
 class QuoteView(APIView):
     def post(self, request):
@@ -10,7 +11,8 @@ class QuoteView(APIView):
         stockSymbol = request.data.get("stockSymbol")
 
         # Retrieve quote
-        quote = get_quote(userId, stockSymbol)
+        lastTransaction = Transactions.objects.last()
+        quote = get_quote(userId, stockSymbol,lastTransaction.transactionNum)
 
         # Return quote
         data = {

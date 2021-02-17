@@ -21,7 +21,7 @@ class SellView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(userId, stockSymbol)
+        stockQuote = get_quote(id=userId, sym=stockSymbol)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -59,7 +59,7 @@ class CommitSellView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(userId, stockSymbol)
+        stockQuote = get_quote(id=userId, sym=stockSymbol)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -81,7 +81,7 @@ class CommitSellView(APIView):
             type="accountTransaction",
             timestamp=float(time()),
             server='TS',
-            transactionNum=1, #TODO
+            transactionNum=sellTransaction.transactionNum, #TODO
             userCommand='remove',
             userId=userId,
             amount=amount
