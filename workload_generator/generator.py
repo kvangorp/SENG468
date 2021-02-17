@@ -74,7 +74,10 @@ def commandSwitch(command):
         cancel_set_sell(command[1], command[2])
     elif command[0] == 'DUMPLOG':
         print(command[0])
-        dumplog(command[1])
+        if len(command) == 3:
+            dumplog(command[1], command[2])
+        else:
+            dumplog(command[1])
     elif command[0] == 'DISPLAY_SUMMARY':
         print(command[0])
         display_summary(command[1])
@@ -209,9 +212,16 @@ def cancel_set_sell(userId, stockSymbol):
     print(res)
     user_command_log(userid=userId, command='CANCEL_SET_SELL')
 
-def dumplog(filename):
+def dumplog(userid='', filename=''):
     filename = filename.strip()
-    res = requests.get('http://localhost:8000/api/transactions/')
+    if userid:
+        data = {
+            'userId': userid
+        }
+        res = requests.get('http://localhost:8000/api/transactions/', params=data)
+    else:
+        res = requests.get('http://localhost:8000/api/transactions/') 
+    
     XMLgen.createDocument(filename, res.json())
 
 def display_summary(userId):
