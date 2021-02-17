@@ -77,7 +77,7 @@ def commandSwitch(command):
         if len(command) == 3:
             dumplog(command[1], command[2])
         else:
-            dumplog(command[1])
+            dumplog(filename=command[1])
     elif command[0] == 'DISPLAY_SUMMARY':
         print(command[0])
         display_summary(command[1])
