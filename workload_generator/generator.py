@@ -75,8 +75,9 @@ def commandSwitch(command):
     elif command[0] == 'DUMPLOG':
         print(command[0])
         dumplog(command[1])
-	# elif command == 'DUMPLOG':
-	# elif command == 'DISPLAY_SUMMARY':
+    elif command[0] == 'DISPLAY_SUMMARY':
+        print(command[0])
+        display_summary(command[1])
 	
 
 def add(userid, amount):
@@ -212,6 +213,14 @@ def dumplog(filename):
     filename = filename.strip()
     res = requests.get('http://localhost:8000/api/transactions/')
     XMLgen.createDocument(filename, res.json())
+
+def display_summary(userId):
+    data = {
+        'userId': userId
+    }
+    res = requests.post(f'http://localhost:8000/api/commands/display_summary/', json=data)
+    print('Response:',res.json())
+    # user_command_log(userid=userId, command='DISPLAY_SUMMARY')
     
 
 for line in Lines:

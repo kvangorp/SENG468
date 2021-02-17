@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import Account
+from ..models import Account, Stock, Trigger
 from transactions.models import Transactions
 from time import time
 
@@ -46,4 +46,36 @@ class DumplogView(APIView):
 
 class DisplaySummaryView(APIView):
     def post(self, request):
-        print('display summary')
+        # Get request data
+        userId = request.data.get("userId")
+
+        # Find user account
+        userAccount = Account.objects.filter(
+            userId=userId,
+        ).first()
+
+        # Find stock accounts
+        stocks = Stock.objects.filter(
+            userId=userId
+        )
+
+        # Find triggers
+        triggers = Trigger.objects.filter(
+            userId=userId
+        )
+
+        # Get transaction history
+        transactions= Transactions.objects.filter(
+            userId=userId
+        )
+
+        # Return user summary
+        data = {
+            "userId": userId,
+            "balance": userAccount.balance,
+            "pending": userAccount.pending,
+            "stocks": stocks.values(),
+            "triggers": triggers.values(),
+            "transactions": transactions.values()
+        }
+        return Response(data, status=status.HTTP_200_OK)
