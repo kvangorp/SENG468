@@ -7,13 +7,15 @@ def get_quote(id, sym):
     data = quoteClient(sym, id)
     elements = data.split(',')
 
-    quoteResult = Quote(
-        quote=float(elements[0]),
-        stockSymbol=elements[1],
-        userId=elements[2],
-        timestamp=float(elements[3]),
-        cryptokey=elements[4]
+    quote, created = Quote.objects.get_or_create(
+        stockSymbol=elements[1]
     )
+    quote.quote = float(elements[0])
+    quote.stockSymbol = elements[1]
+    quote.userId = elements[2]
+    quote.timestamp = float(elements[3])
+    quote.cryptokey = elements[4]
+    quote.save()
 
     # Log quote server transaction
     transaction = Transactions(
@@ -29,7 +31,7 @@ def get_quote(id, sym):
     )
     transaction.save()
 
-    return quoteResult
+    return quote
 
 def quoteClient(sym, id):
     # Create the socket

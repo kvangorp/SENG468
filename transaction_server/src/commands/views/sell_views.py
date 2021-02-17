@@ -19,6 +19,7 @@ class SellView(APIView):
             stockSymbol=stockSymbol
         ).first()
 
+        # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
         stockQuote = get_quote(userId, stockSymbol)
         stockPrice = stockQuote.quote
@@ -56,6 +57,7 @@ class CommitSellView(APIView):
             stockSymbol=stockSymbol
         ).first()
 
+        # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
         stockQuote = get_quote(userId, stockSymbol)
         stockPrice = stockQuote.quote

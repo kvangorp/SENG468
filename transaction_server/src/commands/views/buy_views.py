@@ -56,6 +56,7 @@ class CommitBuyView(APIView):
             defaults={'shares':0.0}
         )
 
+        # TODO review switching to checking quote cash instead
         # Calculate number of stocks to buy
         stockQuote = get_quote(userId, stockSymbol)
         stockPrice = stockQuote.quote
