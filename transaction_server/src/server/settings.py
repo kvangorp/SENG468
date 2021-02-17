@@ -81,7 +81,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'ariesdb',
-        'HOST': 'localhost',
+        'CLIENT': {
+           'host': 'mongodb',
+        },
         'PORT': 27017
     }
 }
