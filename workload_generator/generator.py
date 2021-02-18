@@ -10,7 +10,7 @@ Lines = file1.readlines()
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='',transactionNum=1):
     log = {
         'type': 'userCommand',
-        'timestamp': int(time()),
+        'timestamp': int(time()*1000),
         'server': WEBSERVER,
         'transactionNum': transactionNum,
         'userCommand': command,
@@ -263,6 +263,8 @@ def cancel_set_sell(userId, stockSymbol):
 
 def dumplog(userid='', filename=''):
     filename = filename.strip()
+    transactionNum = transaction_num_generator()
+    user_command_log(userid=userid, command='DUMPLOG', transactionNum=transactionNum)
     if userid:
         data = {
             'userId': userid
@@ -277,9 +279,10 @@ def display_summary(userId):
     data = {
         'userId': userId
     }
+    transactionNum = transaction_num_generator()
+    user_command_log(userid=userId, command='DISPLAY_SUMMARY', transactionNum=transactionNum)
     res = requests.post(f'http://localhost:8000/api/commands/display_summary/', json=data)
     print('Response:',res.json())
-    # user_command_log(userid=userId, command='DISPLAY_SUMMARY')
     
 
 for line in Lines:
