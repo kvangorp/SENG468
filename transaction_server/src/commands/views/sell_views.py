@@ -21,7 +21,7 @@ class SellView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol)
+        stockQuote = get_quote(id=userId, sym=stockSymbol,isSysEvent=False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -59,7 +59,7 @@ class CommitSellView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol)
+        stockQuote = get_quote(id=userId, sym=stockSymbol, isSysEvent=False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -79,7 +79,7 @@ class CommitSellView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=float(time()),
+            timestamp=int(time()),
             server='TS',
             transactionNum=sellTransaction.transactionNum, #TODO
             userCommand='remove',
@@ -96,7 +96,7 @@ class CommitSellView(APIView):
         recentSell = Transactions.objects.filter(
             userId=userId,
             userCommand="SELL",
-            timestamp__gte=(time() - 60)
+            timestamp__gte=(int(time() - 60))
         ).order_by(
             '-timestamp'
         ).first()
@@ -129,7 +129,7 @@ class CancelSellView(APIView):
         recentSell = Transactions.objects.filter(
             userId=userId,
             userCommand="SELL",
-            timestamp__gte=(time() - 60)
+            timestamp__gte=(int(time() - 60))
         ).order_by(
             '-timestamp'
         ).first()

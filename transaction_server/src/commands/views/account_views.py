@@ -28,7 +28,7 @@ class AddView(APIView):
         lastTransaction = Transactions.objects.last()
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=float(time()),
+            timestamp=int(time()),
             server='TS',
             transactionNum=lastTransaction.transactionNum, #TODO
             userCommand='add',

@@ -25,7 +25,7 @@ elements = data.split(',')
 quote = elements[0]
 stockSymbol = elements[1]
 userID = elements[2]
-timestamp = elements[3]
+timestamp = int(elements[3])
 cryptokey = elements[4]
 print(data)
 
