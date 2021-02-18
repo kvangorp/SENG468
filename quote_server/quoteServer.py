@@ -31,7 +31,7 @@ while True:
         quote = round(random.uniform(1.0,5.0),2)
         stocksymbol = request[0]
         userID = request[1]
-        timestamp = time.time()
+        timestamp = int(time.time())
         letters = string.ascii_lowercase
         cryptokey = ''.join(random.choice(letters) for i in range(10))
 

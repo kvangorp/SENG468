@@ -13,7 +13,7 @@ def get_quote(id, sym,transactionNum=None,isSysEvent=False):
     quote.quote = float(elements[0])
     quote.stockSymbol = elements[1]
     quote.userId = elements[2]
-    quote.timestamp = float(elements[3])
+    quote.timestamp = int(elements[3])
     quote.cryptokey = elements[4]
     quote.save()
 
@@ -30,13 +30,13 @@ def get_quote(id, sym,transactionNum=None,isSysEvent=False):
     # Log quote server transaction
     transaction = Transactions(
         type="quoteServer",
-        timestamp=float(elements[3]),
+        timestamp=int(elements[3]),
         server='QS',
         transactionNum=transactionNum, #TODO
         price=float(elements[0]),
         stockSymbol=elements[1],
         userId=elements[2],
-        quoteServerTime=float(elements[3]),
+        quoteServerTime=int(elements[3]),
         cryptoKey=elements[4]
     )
     transaction.save()
@@ -60,7 +60,7 @@ def quoteClient(sym, id):
     quote = elements[0]
     stockSymbol = elements[1]
     userID = elements[2]
-    timestamp = elements[3]
+    timestamp = int(elements[3])
     cryptokey = elements[4]
 
     # close the connection, and the socket

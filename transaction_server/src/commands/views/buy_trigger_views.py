@@ -48,7 +48,7 @@ class SetBuyAmountView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=float(time()),
+            timestamp=int(time()),
             server='TS',
             transactionNum=trigger.transactionNum, #TODO
             userCommand='remove',
@@ -112,7 +112,7 @@ class CancelSetBuyView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=float(time()),
+            timestamp=int(time()),
             server='TS',
             transactionNum=trigger.transactionNum, #TODO
             userCommand='add',

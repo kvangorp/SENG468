@@ -1,6 +1,6 @@
 import requests
 from time import time
-from Database2XML import XMLgen
+from database2xml import XMLgen
 from lxml import etree
 
 WEBSERVER = 'WS'
@@ -10,7 +10,7 @@ Lines = file1.readlines()
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='',transactionNum=1):
     log = {
         'type': 'userCommand',
-        'timestamp': time(),
+        'timestamp': int(time()),
         'server': WEBSERVER,
         'transactionNum': transactionNum,
         'userCommand': command,
@@ -85,7 +85,7 @@ def commandSwitch(command):
 
 def transaction_num_generator():
     res = requests.get('http://localhost:8000/api/transactions/')  
-    if res.json()[-1]['transactionNum'] == None:
+    if res.json() == []:
         return 1
     return res.json()[-1]['transactionNum'] + 1
 
