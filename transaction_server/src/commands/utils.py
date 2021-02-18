@@ -38,15 +38,17 @@ def quoteClient(sym, id):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Connect the socket
-    s.connect(('127.0.0.1',12345))
+    s.connect(('192.168.4.2',4444))
 
+    request = f'{sym},{id}\n'.encode()
+    print(request)
     # Send the user's query
-    s.send('{},{}'.format(sym,id).encode())
-
+    s.send(request)
+    print('sent')
     #Retrieving and parsing relevant data 
     data = s.recv(2048).decode()
     elements = data.split(',')
-
+    print('received')
     quote = elements[0]
     stockSymbol = elements[1]
     userID = elements[2]

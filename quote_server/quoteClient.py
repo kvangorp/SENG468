@@ -6,15 +6,16 @@ print("  Invalid entry will return 'NA' for userid.");
 print("  Returns: quote,sym,userid,timestamp,cryptokey\n");
 
 # Get a line of text from the user
-#fromUser = sys.stdin.readline().encode();
+fromUser = sys.stdin.readline().encode();
 
 # Create the socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Connect the socket
-s.connect(('127.0.0.1',12345))
+s.connect(('192.168.4.2', 4444))
 # Send the user's query
-s.send('S,oY01WVirLr'.encode())
-#s.send(fromUser)
+#s.send('S,oY01WVirLr'.encode())
+print(fromUser)
+s.send(fromUser)
 
 
 #Retrieving and parsing relevant data 

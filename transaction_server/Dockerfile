@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /code
 COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+RUN python3 -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
 COPY . /code/
 
 COPY entrypoint.sh /entrypoint.sh
