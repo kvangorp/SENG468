@@ -15,7 +15,7 @@ def triggerHandler():
             stockSymbol = stock['stockSymbol']
 
             # Get quote for stock and cache
-            quoteResponse = get_quote(userId, stockSymbol)
+            quoteResponse = get_quote(userId, stockSymbol,isSysEvent=True)
             quote = quoteResponse.quote
 
             # Get triggers for the current stock
