@@ -54,7 +54,7 @@ class SetSellAmountView(APIView):
             type="accountTransaction",
             timestamp=float(time()),
             server='TS',
-            transactionNum=1, #TODO
+            transactionNum=trigger.transactionNumber, #TODO
             userCommand='remove',
             userId=userId,
             amount=amount
@@ -118,7 +118,7 @@ class CancelSetSellView(APIView):
             type="accountTransaction",
             timestamp=float(time()),
             server='TS',
-            transactionNum=1, #TODO
+            transactionNum=trigger.transactionNum, #TODO
             userCommand='add',
             userId=userId,
             amount=amount

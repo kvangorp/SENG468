@@ -25,11 +25,12 @@ class AddView(APIView):
         account.save()
 
         # Log transaction
+        lastTransaction = Transactions.objects.last()
         transaction = Transactions(
             type="accountTransaction",
             timestamp=float(time()),
             server='TS',
-            transactionNum=1, #TODO
+            transactionNum=lastTransaction.transactionNum, #TODO
             userCommand='add',
             userId=userId,
             amount=account.balance

@@ -58,7 +58,8 @@ class CommitBuyView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to buy
-        stockQuote = get_quote(userId, stockSymbol)
+        lastTransaction = Transactions.objects.last()
+        stockQuote = get_quote(userId,stockSymbol,lastTransaction.transactionNum)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -75,7 +76,7 @@ class CommitBuyView(APIView):
             type="accountTransaction",
             timestamp=float(time()),
             server='TS',
-            transactionNum=1, #TODO
+            transactionNum=lastTransaction.transactionNum, #TODO
             userCommand='remove',
             userId=userId,
             amount=amount
