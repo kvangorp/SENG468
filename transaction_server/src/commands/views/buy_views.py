@@ -59,7 +59,7 @@ class CommitBuyView(APIView):
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to buy
         lastTransaction = Transactions.objects.last()
-        stockQuote = get_quote(userId,stockSymbol,lastTransaction.transactionNum)
+        stockQuote = get_quote(userId,stockSymbol,lastTransaction.transactionNum,False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 

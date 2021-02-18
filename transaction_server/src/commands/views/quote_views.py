@@ -12,7 +12,7 @@ class QuoteView(APIView):
 
         # Retrieve quote
         lastTransaction = Transactions.objects.last()
-        quote = get_quote(userId, stockSymbol,lastTransaction.transactionNum)
+        quote = get_quote(userId, stockSymbol,lastTransaction.transactionNum,False)
 
         # Return quote
         data = {

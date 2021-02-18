@@ -2,7 +2,7 @@ import socket, sys
 from .models import Quote
 from transactions.models import Transactions
 
-def get_quote(id, sym,transactionNum=None):
+def get_quote(id, sym,transactionNum=None,isSysEvent=False):
     # Get quote from quote server
     data = quoteClient(sym, id)
     elements = data.split(',')
@@ -17,11 +17,16 @@ def get_quote(id, sym,transactionNum=None):
     quote.cryptokey = elements[4]
     quote.save()
 
+    
     if transactionNum is None:
         lastTransaction= Transactions.objects.last()
         if lastTransaction is None:
             transactionNum=1
-        transactionNum=lastTransaction.transactionNum+1
+        if isSysEvent:
+            transactionNum=lastTransaction.transactionNum
+        else: 
+            transactionNum=lastTransaction.transactionNum+1
+    
     # Log quote server transaction
     transaction = Transactions(
         type="quoteServer",
