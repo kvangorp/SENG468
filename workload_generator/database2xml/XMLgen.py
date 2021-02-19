@@ -30,6 +30,32 @@ def userCommandsGen(input):
 
     return commandType
 
+def noUserCommandsGen(input):
+    commandType = etree.Element("userCommand") 
+        
+    timestamp = etree.SubElement(commandType, "timestamp") 
+    timestamp.text = input['timestamp'] 
+
+    server = etree.SubElement(commandType, "server") 
+    server.text = input['server']
+
+    transactionNum = etree.SubElement(commandType, "transactionNum") 
+    transactionNum.text = input['transNum']
+
+    command = etree.SubElement(commandType, "command") 
+    command.text = input['cmd']
+
+    stockSymbol = etree.SubElement(commandType, "stockSymbol") 
+    stockSymbol.text = input['stock']
+
+    filename = etree.SubElement(commandType, "filename") 
+    filename.text = input['file']
+
+    funds = etree.SubElement(commandType, "funds") 
+    funds.text = input['funds']
+
+    return commandType
+
 def quoteServerGen(input):
     quoteServer = etree.Element("quoteServer")
     
@@ -203,18 +229,31 @@ def createDocument(filename, transaction_list):
     log = etree.Element("log")
     for row in transaction_list:
         if row['type'] == 'userCommand':
-            input = {
-                'timestamp': str(row['timestamp']),
-                'server': row['server'],
-                'transNum': str(row['transactionNum']),
-                'cmd': row['userCommand'],
-                'user': row['userId'],
-                'stock': row['stockSymbol'],
-                'file': filename,
-                'funds': str(row['amount'])
-            }
-            eTree = userCommandsGen(input)
-            log.append(eTree)
+            if row['userId'] == '':
+                input = {
+                    'timestamp': str(row['timestamp']),
+                    'server': row['server'],
+                    'transNum': str(row['transactionNum']),
+                    'cmd': row['userCommand'],
+                    'stock': row['stockSymbol'],
+                    'file': filename,
+                    'funds': str(row['amount'])
+                }
+                eTree = noUserCommandsGen(input)
+                log.append(eTree)
+            else:
+                input = {
+                    'timestamp': str(row['timestamp']),
+                    'server': row['server'],
+                    'transNum': str(row['transactionNum']),
+                    'cmd': row['userCommand'],
+                    'user': row['userId'],
+                    'stock': row['stockSymbol'],
+                    'file': filename,
+                    'funds': str(row['amount'])
+                }
+                eTree = userCommandsGen(input)
+                log.append(eTree)
         elif row['type'] == 'quoteServer':
             input = {
                 'timestamp': str(row['timestamp']),
