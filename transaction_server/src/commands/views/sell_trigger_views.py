@@ -55,7 +55,7 @@ class SetSellAmountView(APIView):
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNumber, 
+            transactionNum=lastTransaction.transactionNum, 
             userCommand='remove',
             userId=userId,
             amount=amount

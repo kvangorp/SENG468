@@ -21,15 +21,18 @@ class SellView(APIView):
             stockSymbol=stockSymbol
         ).first()
 
-        # TODO review switching to checking quote cash instead
+        if not stockAccount:
+            return Response("You don't have this stock.", status=status.HTTP_412_PRECONDITION_FAILED)
+
+        # TODO: review switching to checking quote cash instead
         # Calculate number of stocks to sell
         stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=lastTransaction.transactionNum, isSysEvent=False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
-
+        
         # Check that the user has enough stocks to continue with sell
         if stockAccount.shares < shares:
-            return Response("You don't have enough money.", status=status.HTTP_412_PRECONDITION_FAILED)
+            return Response("You don't have enough shares.", status=status.HTTP_412_PRECONDITION_FAILED)
         
         return Response(status=status.HTTP_200_OK)
 
