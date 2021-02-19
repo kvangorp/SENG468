@@ -45,12 +45,13 @@ class SetBuyAmountView(APIView):
             trigger.amount = amount
         trigger.save()
 
+        lastTransaction = Transactions.objects.last()
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()),
+            timestamp=int(time()*1000),
             server='TS',
-            transactionNum=trigger.transactionNum, #TODO
+            transactionNum=lastTransaction.transactionNum,
             userCommand='remove',
             userId=userId,
             amount=amount
@@ -109,12 +110,13 @@ class CancelSetBuyView(APIView):
         userAccount.pending -= amount
         userAccount.save()
 
+        lastTransaction = Transactions.objects.last()
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()),
+            timestamp=int(time()*1000),
             server='TS',
-            transactionNum=trigger.transactionNum, #TODO
+            transactionNum=lastTransaction.transactionNum,
             userCommand='add',
             userId=userId,
             amount=amount

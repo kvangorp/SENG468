@@ -74,7 +74,7 @@ class CommitBuyView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()),
+            timestamp=int(time()*1000),
             server='TS',
             transactionNum=lastTransaction.transactionNum, #TODO
             userCommand='remove',
@@ -91,7 +91,7 @@ class CommitBuyView(APIView):
         recentBuy = Transactions.objects.filter(
             userId=userId,
             userCommand="BUY",
-            timestamp__gte=(int(time() - 60))
+            timestamp__gte=int((time() - 60)*1000)
         ).order_by(
             '-timestamp'
         ).first()
@@ -124,7 +124,7 @@ class CancelBuyView(APIView):
         recentBuy = Transactions.objects.filter(
             userId=userId,
             userCommand="BUY",
-            timestamp__gte=(int(time() - 60))
+            timestamp__gte=int((time() - 60)*1000)
         ).order_by(
             '-timestamp'
         ).first()

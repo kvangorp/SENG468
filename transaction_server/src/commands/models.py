@@ -11,7 +11,7 @@ class Quote(models.Model):
     quote = models.FloatField(max_length=50,default=0.0)
     stockSymbol = models.CharField(max_length=50,default='')
     userId = models.CharField(max_length=50, default='')
-    timestamp = models.IntegerField(default=0)
+    timestamp = models.BigIntegerField(default=0)
     cryptokey = models.CharField(max_length=50,default='')
 
 class Stock(models.Model):

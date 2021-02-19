@@ -13,6 +13,8 @@ class SellView(APIView):
         stockSymbol = request.data.get("stockSymbol")
         amount = float(request.data.get("amount"))
 
+        lastTransaction = Transactions.objects.last()
+
         # Find stock account
         stockAccount = Stock.objects.filter(
             userId=userId,
@@ -21,7 +23,7 @@ class SellView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol,isSysEvent=False)
+        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=lastTransaction.transactionNum, isSysEvent=False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -46,6 +48,8 @@ class CommitSellView(APIView):
         amount = sellTransaction.amount
         stockSymbol = sellTransaction.stockSymbol
 
+        lastTransaction = Transactions.objects.last()
+
         # Find user account
         userAccount = Account.objects.filter(
             userId=userId,
@@ -59,7 +63,7 @@ class CommitSellView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol, isSysEvent=False)
+        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=lastTransaction.transactionNum, isSysEvent=False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -75,13 +79,15 @@ class CommitSellView(APIView):
         # Remove stock shares from stock account
         stockAccount.shares -= shares
         stockAccount.save()
+        
+        lastTransaction = Transactions.objects.last()
 
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()),
+            timestamp=int(time()*1000),
             server='TS',
-            transactionNum=sellTransaction.transactionNum, #TODO
+            transactionNum=lastTransaction.transactionNum,
             userCommand='remove',
             userId=userId,
             amount=amount
@@ -96,7 +102,7 @@ class CommitSellView(APIView):
         recentSell = Transactions.objects.filter(
             userId=userId,
             userCommand="SELL",
-            timestamp__gte=(int(time() - 60))
+            timestamp__gte=int((time() - 60)*1000)
         ).order_by(
             '-timestamp'
         ).first()
@@ -129,7 +135,7 @@ class CancelSellView(APIView):
         recentSell = Transactions.objects.filter(
             userId=userId,
             userCommand="SELL",
-            timestamp__gte=(int(time() - 60))
+            timestamp__gte=int((time() - 60)*1000)
         ).order_by(
             '-timestamp'
         ).first()
