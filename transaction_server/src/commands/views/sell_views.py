@@ -22,6 +22,19 @@ class SellView(APIView):
         ).first()
 
         if not stockAccount:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='sell',
+                userId=userId,
+                stockSymbol=stockSymbol,
+                amount=amount,
+                errorEvent="You don't have this stock."
+            )
+            transaction.save()
             return Response("You don't have this stock.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # TODO: review switching to checking quote cash instead
@@ -32,6 +45,19 @@ class SellView(APIView):
         
         # Check that the user has enough stocks to continue with sell
         if stockAccount.shares < shares:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='sell',
+                userId=userId,
+                stockSymbol=stockSymbol,
+                amount=amount,
+                errorEvent="You don't have enough shares."
+            )
+            transaction.save()
             return Response("You don't have enough shares.", status=status.HTTP_412_PRECONDITION_FAILED)
         
         return Response(status=status.HTTP_200_OK)
@@ -45,13 +71,24 @@ class CommitSellView(APIView):
         # Get most recent sell transaction
         sellTransaction = self.mostRecentValidSell(userId)
 
+        lastTransaction = Transactions.objects.last()
+
         if sellTransaction is None:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='commit_sell',
+                userId=userId,
+                errorEvent="You don't have a sell to commit."
+            )
+            transaction.save()
             return Response("There is no sell to commit.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         amount = sellTransaction.amount
         stockSymbol = sellTransaction.stockSymbol
-
-        lastTransaction = Transactions.objects.last()
 
         # Find user account
         userAccount = Account.objects.filter(
@@ -71,8 +108,34 @@ class CommitSellView(APIView):
         shares = amount/stockPrice
 
         if stockAccount is None:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='commit_sell',
+                userId=userId,
+                stockSymbol=stockSymbol,
+                amount=amount,
+                errorEvent="You don't have an account."
+            )
+            transaction.save()
             return Response("Account doesn't exist.", status=status.HTTP_412_PRECONDITION_FAILED)
         if stockAccount.shares < shares:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='commit_sell',
+                userId=userId,
+                stockSymbol=stockSymbol,
+                amount=amount,
+                errorEvent="You don't have enough stocks."
+            )
+            transaction.save()
             return Response("You don't have enough stocks to sell.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Increment user balance amount
@@ -144,6 +207,18 @@ class CancelSellView(APIView):
         ).first()
 
         if recentSell is None:
+            lastTransaction = Transactions.objects.last()
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='cancel_sell',
+                userId=userId,
+                errorEvent="You don't have a recent sell to cancel."
+            )
+            transaction.save()
             return Response("There is no recent sell to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
             
         return Response(status=status.HTTP_200_OK)

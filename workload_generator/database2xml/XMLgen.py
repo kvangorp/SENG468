@@ -118,19 +118,19 @@ def systemEventGen(input):
     server.text = input['server']
 
     transactionNum = etree.SubElement(systemEvent, "transactionNum") 
-    transactionNum.text = input['transactionNum']
+    transactionNum.text = input['transNum']
 
     command = etree.SubElement(systemEvent, "command") 
-    command.text = input['command']
+    command.text = input['userCommand']
 
     username = etree.SubElement(systemEvent, "username") 
-    username.text = input['username']
+    username.text = input['user']
 
     stockSymbol = etree.SubElement(systemEvent, "stockSymbol") 
     stockSymbol.text = input['stockSymbol']
 
     filename = etree.SubElement(systemEvent, "filename") 
-    filename.text = input['filename']
+    filename.text = input['file']
 
     funds = etree.SubElement(systemEvent, "funds") 
     funds.text = input['funds']
@@ -140,8 +140,8 @@ def systemEventGen(input):
 def errorEventGen(input):
     errorEvent = etree.Element("errorEvent")
     
-    timestamp = etree.SubElement(errorEvent, "eletimestampment") 
-    timestamp.text = input['eletimestampment']
+    timestamp = etree.SubElement(errorEvent, "timestamp") 
+    timestamp.text = input['timestamp']
 
     server = etree.SubElement(errorEvent, "server") 
     server.text = input['server']
@@ -277,6 +277,33 @@ def createDocument(filename, transaction_list):
                 'amount': str(row['amount']),
             }
             eTree = userAccountGen(input)
+            log.append(eTree)
+        elif row['type'] == 'systemEvent':
+            input = {
+                'timestamp': str(row['timestamp']),
+                'server': row['server'],
+                'transNum': str(row['transactionNum']),
+                'userCommand': row['userCommand'],
+                'user': row['userId'],
+                'stockSymbol': row['stockSymbol'],
+                'file': filename,
+                'funds': str(row['amount'])
+            }
+            eTree = systemEventGen(input)
+            log.append(eTree)
+        elif row['type'] == 'errorEvent':
+            input = {
+                'timestamp': str(row['timestamp']),
+                'server': row['server'],
+                'transactionNum': str(row['transactionNum']),
+                'command': row['userCommand'],
+                'username': row['userId'],
+                'stockSymbol': row['stockSymbol'],
+                'filename': filename,
+                'funds': str(row['amount']),
+                'errorMessage': str(row['errorEvent']),
+            }
+            eTree = errorEventGen(input)
             log.append(eTree)
     tree = etree.ElementTree(log)
     tree.write(filename+'.xml', pretty_print=True, encoding=None, xml_declaration=True)
