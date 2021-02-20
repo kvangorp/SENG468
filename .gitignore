@@ -2,3 +2,5 @@
 *.py[cod]
 **/.venv
 .DS_Store
+*.gz
+*.xml

@@ -4,7 +4,7 @@ from database2xml import XMLgen
 from lxml import etree
 
 WEBSERVER = 'WS'
-file1 = open('./testfiles/10userWorkLoad.txt', 'r')
+file1 = open('./testfiles/1userWorkLoad.txt', 'r')
 Lines = file1.readlines()
 
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='',transactionNum=1):
