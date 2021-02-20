@@ -135,7 +135,7 @@ def systemEventGen(input):
     funds = etree.SubElement(systemEvent, "funds") 
     funds.text = input['funds']
 
-    return etree.ElementTree(systemEvent)
+    return systemEvent
 
 def errorEventGen(input):
     errorEvent = etree.Element("errorEvent")
@@ -167,7 +167,7 @@ def errorEventGen(input):
     errorMessage = etree.SubElement(errorEvent, "errorMessage") 
     errorMessage.text = input['errorMessage']
 
-    return etree.ElementTree(errorEvent)
+    return errorEvent
 
 def debugEventGen(input):
     debugEvent = etree.Element("debugEvent") 
