@@ -19,7 +19,7 @@ def user_command_log(userid='', amount=0.0, command='', stockSymbol='',transacti
         'amount': amount
     }
     logger = requests.post(f'http://localhost:8000/api/transactions/', json=log)
-    print(logger.json())
+    print(logger)
 
 def generateCommand(line):
     command = line[0]
@@ -111,7 +111,7 @@ def quote(userid, stock):
     user_command_log(userid, 0, 'QUOTE', stock,transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/quote/', json=data)
-    print('Returned quote: ', res.json())
+    print(res)
    
 
 def buy(userid, stock, dollar_amount):
@@ -275,6 +275,7 @@ def dumplog(userid='', filename=''):
     
     XMLgen.createDocument(filename, res.json())
 
+
 def display_summary(userId):
     data = {
         'userId': userId
@@ -282,11 +283,12 @@ def display_summary(userId):
     transactionNum = transaction_num_generator()
     user_command_log(userid=userId, command='DISPLAY_SUMMARY', transactionNum=transactionNum)
     res = requests.post(f'http://localhost:8000/api/commands/display_summary/', json=data)
-    print('Response:',res.json())
+    print(res)
     
 
 for line in Lines:
     fileLine = line.split(' ')
     commandLine = fileLine[1]
-    generateCommand(commandLine.split(','))
+    print(fileLine[0])
+    commandSwitch(commandLine.split(','))
 

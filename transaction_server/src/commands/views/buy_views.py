@@ -20,6 +20,20 @@ class BuyView(APIView):
 
         # Check that the user has enough money to continue with purchase
         if userAccount.balance < amount:
+            lastTransaction = Transactions.objects.last()
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='buy',
+                userId=userId,
+                stockSymbol=stockSymbol,
+                amount=amount,
+                errorEvent="You don't have enough money."
+            )
+            transaction.save()
             return Response("You don't have enough money.", status=status.HTTP_412_PRECONDITION_FAILED)
         
         return Response(status=status.HTTP_200_OK)
@@ -32,7 +46,20 @@ class CommitBuyView(APIView):
         # Get most recent buy transaction
         buyTransaction = self.mostRecentValidBuy(userId)
 
+        lastTransaction = Transactions.objects.last()
+
         if buyTransaction is None:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='commit_buy',
+                userId=userId,
+                errorEvent="You don't have a buy to commit."
+            )
+            transaction.save()
             return Response("There is no buy to commit.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         amount = buyTransaction.amount
@@ -44,8 +71,34 @@ class CommitBuyView(APIView):
         ).first()
 
         if userAccount is None:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='commit_buy',
+                userId=userId,
+                stockSymbol=stockSymbol,
+                amount=amount,
+                errorEvent="You don't have a user account."
+            )
+            transaction.save()
             return Response("Account doesn't exist.", status=status.HTTP_412_PRECONDITION_FAILED)
         if userAccount.balance < amount:
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='commit_buy',
+                userId=userId,
+                stockSymbol=stockSymbol,
+                amount=amount,
+                errorEvent="You don't have enough money."
+            )
+            transaction.save()
             return Response("You don't have enough money.", status=status.HTTP_412_PRECONDITION_FAILED)
 
 
@@ -58,7 +111,6 @@ class CommitBuyView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to buy
-        lastTransaction = Transactions.objects.last()
         stockQuote = get_quote(userId,stockSymbol,lastTransaction.transactionNum,False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
@@ -130,6 +182,18 @@ class CancelBuyView(APIView):
         ).first()
 
         if recentBuy is None:
+            lastTransaction = Transactions.objects.last()
+            # Log error event to transaction
+            transaction = Transactions(
+                type='errorEvent',
+                timestamp=int(time()*1000),
+                server='TS',
+                transactionNum=lastTransaction.transactionNum,
+                userCommand='cancel_buy',
+                userId=userId,
+                errorEvent="You don't have a recent buy to cancel."
+            )
+            transaction.save()
             return Response("There is no recent buy to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
             
         return Response(status=status.HTTP_200_OK)
