@@ -161,9 +161,6 @@ def errorEventGen(input):
     filename = etree.SubElement(errorEvent, "filename") 
     filename.text = input['filename']
 
-    funds = etree.SubElement(errorEvent, "funds") 
-    funds.text = input['funds']
-
     errorMessage = etree.SubElement(errorEvent, "errorMessage") 
     errorMessage.text = input['errorMessage']
 
