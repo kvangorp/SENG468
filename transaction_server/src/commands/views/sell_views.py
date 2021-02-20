@@ -28,7 +28,7 @@ class SellView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='sell',
+                userCommand='SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
                 amount=amount,
@@ -51,7 +51,7 @@ class SellView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='sell',
+                userCommand='SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
                 amount=amount,
@@ -80,7 +80,7 @@ class CommitSellView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='commit_sell',
+                userCommand='COMMIT_SELL',
                 userId=userId,
                 errorEvent="You don't have a sell to commit."
             )
@@ -114,7 +114,7 @@ class CommitSellView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='commit_sell',
+                userCommand='COMMIT_SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
                 amount=amount,
@@ -129,7 +129,7 @@ class CommitSellView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='commit_sell',
+                userCommand='COMMIT_SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
                 amount=amount,
@@ -214,7 +214,7 @@ class CancelSellView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='cancel_sell',
+                userCommand='CANCEL_SELL',
                 userId=userId,
                 errorEvent="You don't have a recent sell to cancel."
             )

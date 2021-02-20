@@ -300,7 +300,6 @@ def createDocument(filename, transaction_list):
                 'username': row['userId'],
                 'stockSymbol': row['stockSymbol'],
                 'filename': filename,
-                'funds': str(row['amount']),
                 'errorMessage': str(row['errorEvent']),
             }
             eTree = errorEventGen(input)

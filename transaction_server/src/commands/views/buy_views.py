@@ -27,7 +27,7 @@ class BuyView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='buy',
+                userCommand='BUY',
                 userId=userId,
                 stockSymbol=stockSymbol,
                 amount=amount,
@@ -55,7 +55,7 @@ class CommitBuyView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='commit_buy',
+                userCommand='COMMIT_BUY',
                 userId=userId,
                 errorEvent="You don't have a buy to commit."
             )
@@ -77,7 +77,7 @@ class CommitBuyView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='commit_buy',
+                userCommand='COMMIT_BUY',
                 userId=userId,
                 stockSymbol=stockSymbol,
                 amount=amount,
@@ -92,7 +92,7 @@ class CommitBuyView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='commit_buy',
+                userCommand='COMMIT_BUY',
                 userId=userId,
                 stockSymbol=stockSymbol,
                 amount=amount,
@@ -189,7 +189,7 @@ class CancelBuyView(APIView):
                 timestamp=int(time()*1000),
                 server='TS',
                 transactionNum=lastTransaction.transactionNum,
-                userCommand='cancel_buy',
+                userCommand='CANCEL_BUY',
                 userId=userId,
                 errorEvent="You don't have a recent buy to cancel."
             )
