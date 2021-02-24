@@ -1,0 +1,35 @@
+version: '2'
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
+  quote_server:
+    container_name: quote_server
+    build: ./quote_server
+    command: python quoteServer.py 0.0.0.0:4444
+    volumes:
+      - ./quote_server:/code
+    ports:
+      - "4444:4444"
+
+  server:
+    container_name: transaction_server
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+      - quote_server
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=quote_server
+  
+
+
