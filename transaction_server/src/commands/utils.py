@@ -1,4 +1,4 @@
-import socket, sys
+import socket, sys, os
 from .models import Quote
 from transactions.models import Transactions
 
@@ -48,7 +48,7 @@ def quoteClient(sym, id):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Connect the socket
-    s.connect(('192.168.4.2',4444))
+    s.connect((os.environ['quoteServerHost'],4444))
 
     request = f'{sym},{id}\n'.encode()
     print(request)

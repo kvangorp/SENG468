@@ -15,7 +15,9 @@ services:
       - ./transaction_server/src:/code
     ports:
       - "8000:8000"
-      - "12345:12345"
+      - "4444:4444"
     depends_on:
       - mongodb
     entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
