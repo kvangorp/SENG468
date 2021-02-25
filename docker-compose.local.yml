@@ -16,6 +16,12 @@ services:
     ports:
       - "4444:4444"
 
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+
   server:
     container_name: transaction_server
     build: ./transaction_server
@@ -27,6 +33,7 @@ services:
     depends_on:
       - mongodb
       - quote_server
+      - redis
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=quote_server
