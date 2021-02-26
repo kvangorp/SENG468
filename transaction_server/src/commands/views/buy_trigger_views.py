@@ -11,13 +11,13 @@ class SetBuyAmountView(APIView):
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
         amount = float(request.data.get("amount"))
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find user account
         userAccount = Account.objects.filter(
             userId=userId,
         ).first()
 
-        lastTransaction = Transactions.objects.last()
 
         # Check user account balance and decrement balance and increment pending 
         if userAccount.balance < amount:
@@ -26,7 +26,7 @@ class SetBuyAmountView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='SET_BUY_AMOUNT',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -65,7 +65,7 @@ class SetBuyAmountView(APIView):
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNum,
+            transactionNum=transactionNum,
             userCommand='remove',
             userId=userId,
             amount=amount
@@ -80,6 +80,7 @@ class SetBuyTriggerView(APIView):
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
         amount = float(request.data.get("amount"))
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find trigger
         trigger = Trigger.objects.filter(
@@ -89,13 +90,12 @@ class SetBuyTriggerView(APIView):
         ).first()
 
         if trigger is None:
-            lastTransaction = Transactions.objects.last()
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='SET_BUY_TRIGGER',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -116,6 +116,7 @@ class CancelSetBuyView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find and delete trigger
         trigger = Trigger.objects.filter(
@@ -124,7 +125,6 @@ class CancelSetBuyView(APIView):
             isBuy=True
         ).first()
 
-        lastTransaction = Transactions.objects.last()
 
         if trigger is None:
             # Log error event to transaction
@@ -132,7 +132,7 @@ class CancelSetBuyView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='CANCEL_SET_BUY',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -157,7 +157,7 @@ class CancelSetBuyView(APIView):
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNum,
+            transactionNum=transactionNum,
             userCommand='add',
             userId=userId,
             amount=amount

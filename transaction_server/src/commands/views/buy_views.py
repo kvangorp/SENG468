@@ -12,6 +12,7 @@ class BuyView(APIView):
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
         amount = float(request.data.get("amount"))
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find user account
         userAccount = Account.objects.filter(
@@ -20,13 +21,12 @@ class BuyView(APIView):
 
         # Check that the user has enough money to continue with purchase
         if userAccount.balance < amount:
-            lastTransaction = Transactions.objects.last()
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='BUY',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -42,11 +42,11 @@ class CommitBuyView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Get most recent buy transaction
         buyTransaction = self.mostRecentValidBuy(userId)
 
-        lastTransaction = Transactions.objects.last()
 
         if buyTransaction is None:
             # Log error event to transaction
@@ -54,7 +54,7 @@ class CommitBuyView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='COMMIT_BUY',
                 userId=userId,
                 errorEvent="You don't have a buy to commit."
@@ -76,7 +76,7 @@ class CommitBuyView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='COMMIT_BUY',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -91,7 +91,7 @@ class CommitBuyView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='COMMIT_BUY',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -111,7 +111,7 @@ class CommitBuyView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to buy
-        stockQuote = get_quote(userId,stockSymbol,lastTransaction.transactionNum,False)
+        stockQuote = get_quote(userId,stockSymbol,transactionNum,False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -128,7 +128,7 @@ class CommitBuyView(APIView):
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNum, #TODO
+            transactionNum=transactionNum, #TODO
             userCommand='remove',
             userId=userId,
             amount=amount
@@ -171,6 +171,7 @@ class CancelBuyView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find most recent buy in the last 60 seconds, if one exists
         recentBuy = Transactions.objects.filter(
@@ -182,13 +183,12 @@ class CancelBuyView(APIView):
         ).first()
 
         if recentBuy is None:
-            lastTransaction = Transactions.objects.last()
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='CANCEL_BUY',
                 userId=userId,
                 errorEvent="You don't have a recent buy to cancel."

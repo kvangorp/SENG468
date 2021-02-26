@@ -7,6 +7,8 @@ WEBSERVER = 'WS'
 file1 = open('./testfiles/1userWorkLoad.txt', 'r')
 Lines = file1.readlines()
 
+TRANSACTIONNUM = 0
+
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='',transactionNum=1):
     log = {
         'type': 'userCommand',
@@ -84,18 +86,16 @@ def commandSwitch(command):
 	
 
 def transaction_num_generator():
-    res = requests.get('http://localhost:8000/api/transactions/')  
-    if res.json() == []:
-        return 1
-    return res.json()[-1]['transactionNum'] + 1
+    return TRANSACTIONNUM+1
 
     
 def add(userid, amount):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userid,
-        'amount': amount
+        'amount': amount,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
     user_command_log(userid, amount, 'ADD', transactionNum=transactionNum)
     
     res = requests.post('http://localhost:8000/api/commands/add/', json=data)
@@ -103,11 +103,13 @@ def add(userid, amount):
    
 
 def quote(userid, stock):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userid,
-        'stockSymbol': stock
+        'stockSymbol': stock,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid, 0, 'QUOTE', stock,transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/quote/', json=data)
@@ -115,12 +117,14 @@ def quote(userid, stock):
    
 
 def buy(userid, stock, dollar_amount):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userid,
         'stockSymbol': stock,
-        'amount': dollar_amount
+        'amount': dollar_amount,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid, dollar_amount, 'BUY', stock, transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/buy/', json=data)
@@ -129,10 +133,12 @@ def buy(userid, stock, dollar_amount):
 
 #TODO: add status field to buy commands: pending, commited, cancelled
 def commit_buy(userid):
-    data = {
-        'userId': userid
-    }
     transactionNum = transaction_num_generator()
+    data = {
+        'userId': userid,
+        'transactionNum': transactionNum
+    }
+    
     user_command_log(userid, 0.0, 'COMMIT_BUY', '', transactionNum) 
 
     res = requests.post('http://localhost:8000/api/commands/commit_buy/', json=data)
@@ -140,10 +146,12 @@ def commit_buy(userid):
    
 
 def cancel_buy(userid):
-    data = {
-        'userId': userid
-    }
     transactionNum = transaction_num_generator()
+    data = {
+        'userId': userid,
+        'transactionNum': transactionNum
+    }
+    
     user_command_log(userid=userid, command='CANCEL_BUY',transactionNum=transactionNum) 
 
     res = requests.post('http://localhost:8000/api/commands/cancel_buy/', json=data)
@@ -151,12 +159,15 @@ def cancel_buy(userid):
     
 
 def sell(userid, stock, dollar_amount):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userid,
         'stockSymbol': stock,
-        'amount': dollar_amount
+        'amount': dollar_amount,
+        'transactionNum': transactionNum
+    
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid, dollar_amount, 'SELL', stock,transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/sell/', json=data)
@@ -164,10 +175,12 @@ def sell(userid, stock, dollar_amount):
    
 
 def commit_sell(userid):
-    data = {
-        'userId': userid
-    }
     transactionNum = transaction_num_generator()
+    data = {
+        'userId': userid,
+        'transactionNum': transactionNum
+    }
+   
     user_command_log(userid, 0.0, 'COMMIT_SELL', '',transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/commit_sell/', json=data)
@@ -175,10 +188,12 @@ def commit_sell(userid):
  
 
 def cancel_sell(userid):
-    data = {
-        'userId': userid
-    }
     transactionNum = transaction_num_generator()
+    data = {
+        'userId': userid,
+        'transactionNum': transactionNum
+    }
+    
     user_command_log(userid=userid, command='CANCEL_SELL', transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/cancel_sell/', json=data)
@@ -186,12 +201,14 @@ def cancel_sell(userid):
      
 
 def set_buy_ammount(userId, stockSymbol, dollar_amount):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userId,
         'stockSymbol': stockSymbol,
-        'amount': dollar_amount
+        'amount': dollar_amount,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid=userId, command='SET_BUY_AMOUNT', amount=dollar_amount, transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8000/api/commands/set_buy_amount/', json=data)
@@ -199,11 +216,13 @@ def set_buy_ammount(userId, stockSymbol, dollar_amount):
     
 
 def cancel_set_buy(userId, stockSymbol):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userId,
-        'stockSymbol': stockSymbol
+        'stockSymbol': stockSymbol,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid=userId, command='CANCEL_SET_BUY',transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8000/api/commands/cancel_set_buy/', json=data)
@@ -211,12 +230,14 @@ def cancel_set_buy(userId, stockSymbol):
     
 
 def set_buy_trigger(userId, stockSymbol, dollar_amount):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userId,
         'stockSymbol': stockSymbol,
-        'amount': dollar_amount
+        'amount': dollar_amount,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid=userId, command='SET_BUY_TRIGGER', amount=dollar_amount, transactionNum=transactionNum)
     
     res = requests.post(f'http://localhost:8000/api/commands/set_buy_trigger/', json=data)
@@ -224,12 +245,14 @@ def set_buy_trigger(userId, stockSymbol, dollar_amount):
    
 
 def set_sell_ammount(userId, stockSymbol, stock_amount):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userId,
         'stockSymbol': stockSymbol,
-        'amount': stock_amount
+        'amount': stock_amount,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+   
     user_command_log(userid=userId, command='SET_SELL_AMOUNT', amount=stock_amount, transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8000/api/commands/set_sell_amount/', json=data)
@@ -237,12 +260,14 @@ def set_sell_ammount(userId, stockSymbol, stock_amount):
     
 
 def set_sell_trigger(userId, stockSymbol, dollar_amount):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userId,
         'stockSymbol': stockSymbol,
-        'amount': dollar_amount
+        'amount': dollar_amount,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid=userId, command='SET_SELL_TRIGGER', amount=dollar_amount, transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8000/api/commands/set_sell_trigger/', json=data)
@@ -250,11 +275,13 @@ def set_sell_trigger(userId, stockSymbol, dollar_amount):
    
 
 def cancel_set_sell(userId, stockSymbol):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userId,
-        'stockSymbol': stockSymbol
+        'stockSymbol': stockSymbol,
+        'transactionNum': transactionNum
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid=userId, command='CANCEL_SET_SELL',transactionNum=transactionNum)
     
     res = requests.post(f'http://localhost:8000/api/commands/cancel_set_sell/', json=data)
@@ -267,7 +294,8 @@ def dumplog(userid='', filename=''):
     user_command_log(userid=userid, command='DUMPLOG', transactionNum=transactionNum)
     if userid:
         data = {
-            'userId': userid
+            'userId': userid,
+            'transactionNum': transactionNum
         }
         res = requests.get('http://localhost:8000/api/transactions/', params=data)
     else:
@@ -277,10 +305,11 @@ def dumplog(userid='', filename=''):
 
 
 def display_summary(userId):
+    transactionNum = transaction_num_generator()
     data = {
         'userId': userId
     }
-    transactionNum = transaction_num_generator()
+    
     user_command_log(userid=userId, command='DISPLAY_SUMMARY', transactionNum=transactionNum)
     res = requests.post(f'http://localhost:8000/api/commands/display_summary/', json=data)
     print(res)
