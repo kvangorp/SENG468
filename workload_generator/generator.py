@@ -86,7 +86,9 @@ def commandSwitch(command):
 	
 
 def transaction_num_generator():
-    return TRANSACTIONNUM+1
+    global TRANSACTIONNUM
+    TRANSACTIONNUM += 1
+    return TRANSACTIONNUM
 
     
 def add(userid, amount):
@@ -110,7 +112,7 @@ def quote(userid, stock):
         'transactionNum': transactionNum
     }
     
-    user_command_log(userid, 0, 'QUOTE', stock,transactionNum)
+    user_command_log(userid, 0, 'QUOTE', stock, transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/quote/', json=data)
     print(res)
@@ -125,7 +127,7 @@ def buy(userid, stock, dollar_amount):
         'transactionNum': transactionNum
     }
     
-    user_command_log(userid, dollar_amount, 'BUY', stock, transactionNum)
+    user_command_log(userid, dollar_amount, 'BUY', stock, transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/buy/', json=data)
     print(res)
@@ -139,7 +141,7 @@ def commit_buy(userid):
         'transactionNum': transactionNum
     }
     
-    user_command_log(userid, 0.0, 'COMMIT_BUY', '', transactionNum) 
+    user_command_log(userid, 0.0, 'COMMIT_BUY', '', transactionNum=transactionNum) 
 
     res = requests.post('http://localhost:8000/api/commands/commit_buy/', json=data)
     print(res)
@@ -168,7 +170,7 @@ def sell(userid, stock, dollar_amount):
     
     }
     
-    user_command_log(userid, dollar_amount, 'SELL', stock,transactionNum)
+    user_command_log(userid, dollar_amount, 'SELL', stock, transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/sell/', json=data)
     print(res)
@@ -181,7 +183,7 @@ def commit_sell(userid):
         'transactionNum': transactionNum
     }
    
-    user_command_log(userid, 0.0, 'COMMIT_SELL', '',transactionNum)
+    user_command_log(userid, 0.0, 'COMMIT_SELL', '', transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8000/api/commands/commit_sell/', json=data)
     print(res)
