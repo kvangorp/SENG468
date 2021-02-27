@@ -6,36 +6,27 @@
 **Language**: Python  
 **Platforms and Tools**: MongoDB, Django, React
 
-## Setting up dev environment:
+## Requirements
+- Docker
+- docker-compose
 
-Will need to have Docker and docker-compose installed.
+## Local Environment Set Up:
+- Start up the app by running:
+```
+bash ./scripts/local_set_up.sh
+```
+- Shut down the app by running:
+```
+bash ./scripts/local_tear_down.sh
+```
+- If you experience any problems with the above scripts on your local machine, you can instead manually run each command in the scripts.
 
-- To start up the mongoDB database, go to the root directory of the project (where the docker-compose.yml file is located) and run:
+## Virtual Machine Environment Set Up
+- Start up the app by running:
 ```
-docker-compose up
+bash ./scripts/vm_set_up.sh
 ```
-
-- To start up the django backend, go in to the TransactionServer directory and run:
-
+- Shut down the app by running:
 ```
-python -m venv .venv
-.venv\Scripts\activate.bat
-python -m pip install -r requirements.txt
-
-cd src
-python manage.py migrate
-python manage.py runserver
-```
-
-- If you go to http://localhost:8000/api/<stocks|quotes|triggers>, you can interact with the django rest api.
-
-- You can check out the contents of the database by connecting to the mongodb container using the interactive docker terminal, and then opening up the mongo shell:
-```
-docker exec -it mongodb bash
-mongo
-```
-- There's a list of mongo shell commands [here](https://docs.mongodb.com/manual/reference/mongo-shell/). For example, to see all collections you can run:
-```
-use ariesdb
-show collections
+bash ./scripts/vm_tear_down.sh
 ```
