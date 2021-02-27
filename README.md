@@ -10,7 +10,7 @@
 - Docker
 - docker-compose
 
-## Local Environment Set Up:
+## Local Environment Set Up
 - Start up the app by running:
 ```
 bash ./scripts/local_set_up.sh
