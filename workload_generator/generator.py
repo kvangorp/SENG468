@@ -7,7 +7,7 @@ WEBSERVER = 'WS'
 file1 = open('./testfiles/1userWorkLoad.txt', 'r')
 Lines = file1.readlines()
 
-def user_command_log(userid='', amount=0.0, command='', stockSymbol='',transactionNum=1):
+def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transactionNum=1):
     log = {
         'type': 'userCommand',
         'timestamp': int(time()*1000),

@@ -20,7 +20,7 @@ services:
     volumes:
       - ./transaction_server/src:/code
     ports:
-      - "8000:8000"
+      - "8001:8000"
       - "4444:4444"
     depends_on:
       - mongodb
@@ -28,3 +28,26 @@ services:
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=192.168.4.2
+
+  server2:
+    container_name: transaction_server2
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8002:8000"
+      - "4444:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+
+  nginx:
+    build: ./nginx
+    ports: "8080:80"
+    depends_on:
+    - server
+    - server2
