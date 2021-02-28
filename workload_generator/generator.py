@@ -4,7 +4,7 @@ from database2xml import XMLgen
 from lxml import etree
 
 WEBSERVER = 'WS'
-file1 = open('./testfiles/1userWorkLoad.txt', 'r')
+file1 = open('./testfiles/10userWorkLoad.txt', 'r')
 Lines = file1.readlines()
 TRANSACTIONNUM = 0
 
