@@ -46,7 +46,7 @@ services:
       - quoteServerHost=192.168.4.2
 
   nginx:
-    build: ./nginx
+    build: ./transaction_server/nginx
     ports: "8080:80"
     depends_on:
     - server
