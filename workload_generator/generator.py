@@ -6,6 +6,7 @@ from lxml import etree
 WEBSERVER = 'WS'
 file1 = open('./testfiles/1userWorkLoad.txt', 'r')
 Lines = file1.readlines()
+TRANSACTIONNUM = 0
 
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transactionNum=1):
     log = {
