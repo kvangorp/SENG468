@@ -21,7 +21,7 @@ services:
       - ./transaction_server/src:/code
     ports:
       - "8001:8000"
-      - "4444:4444"
+      - "4445:4444"
     depends_on:
       - mongodb
       - redis
@@ -37,7 +37,7 @@ services:
       - ./transaction_server/src:/code
     ports:
       - "8002:8000"
-      - "4444:4444"
+      - "4446:4444"
     depends_on:
       - mongodb
       - redis
@@ -47,7 +47,8 @@ services:
 
   nginx:
     build: ./transaction_server/nginx
-    ports: "8080:80"
+    ports: 
+      - "8080:80"
     depends_on:
     - server
     - server2

@@ -25,7 +25,7 @@ SECRET_KEY = 'a23stu0_!3)j-3r5u0+tp^t5j4d+=h!d+p38pds9l4qbs6*iu+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['loadbalancer']
 
 
 # Application definition
