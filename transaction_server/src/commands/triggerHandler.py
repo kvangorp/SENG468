@@ -8,28 +8,29 @@ def triggerHandler():
         # Get list of fully initialized triggers
         triggers = Trigger.objects.all().exclude(triggerPoint=None)
         stocks = triggers.values('stockSymbol').distinct()
+        if stocks:
+            userId = triggers.first().userId
+            # Iterate through list of stocks used in triggers
+            for stock in stocks:
+                # userId = 'triggerHandler'
+                stockSymbol = stock['stockSymbol']
 
-        # Iterate through list of stocks used in triggers
-        for stock in stocks:
-            userId = 'triggerHandler'
-            stockSymbol = stock['stockSymbol']
+                # Get quote for stock and cache
+                quoteResponse = get_quote(userId, stockSymbol,isSysEvent=True)
+                quote = quoteResponse.quote
 
-            # Get quote for stock and cache
-            quoteResponse = get_quote(userId, stockSymbol,isSysEvent=True)
-            quote = quoteResponse.quote
+                # Get triggers for the current stock
+                currentTriggers = triggers.filter(
+                    stockSymbol=stockSymbol
+                )
 
-            # Get triggers for the current stock
-            currentTriggers = triggers.filter(
-                stockSymbol=stockSymbol
-            )
+                # Iterate through triggers for current stock
+                for trigger in currentTriggers:
+                    if trigger.isBuy and quote <= trigger.triggerPoint:
+                        processBuy(trigger, quote)
 
-            # Iterate through triggers for current stock
-            for trigger in currentTriggers:
-                if trigger.isBuy and quote <= trigger.triggerPoint:
-                    processBuy(trigger, quote)
-
-                elif not trigger.isBuy and quote >= trigger.triggerPoint:
-                    processSell(trigger, quote)
+                    elif not trigger.isBuy and quote >= trigger.triggerPoint:
+                        processSell(trigger, quote)
 
         time.sleep(5)
 

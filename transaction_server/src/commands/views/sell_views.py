@@ -12,8 +12,8 @@ class SellView(APIView):
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
         amount = float(request.data.get("amount"))
+        transactionNum = int(request.data.get("transactionNum"))
 
-        lastTransaction = Transactions.objects.last()
 
         # Find stock account
         stockAccount = Stock.objects.filter(
@@ -27,7 +27,7 @@ class SellView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -39,7 +39,7 @@ class SellView(APIView):
 
         # TODO: review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=lastTransaction.transactionNum, isSysEvent=False)
+        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=transactionNum, isSysEvent=False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
         
@@ -50,7 +50,7 @@ class SellView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -67,11 +67,11 @@ class CommitSellView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Get most recent sell transaction
         sellTransaction = self.mostRecentValidSell(userId)
 
-        lastTransaction = Transactions.objects.last()
 
         if sellTransaction is None:
             # Log error event to transaction
@@ -79,7 +79,7 @@ class CommitSellView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='COMMIT_SELL',
                 userId=userId,
                 errorEvent="You don't have a sell to commit."
@@ -103,7 +103,7 @@ class CommitSellView(APIView):
 
         # TODO review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=lastTransaction.transactionNum, isSysEvent=False)
+        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=transactionNum, isSysEvent=False)
         stockPrice = stockQuote.quote
         shares = amount/stockPrice
 
@@ -113,7 +113,7 @@ class CommitSellView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='COMMIT_SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -128,7 +128,7 @@ class CommitSellView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='COMMIT_SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -146,14 +146,13 @@ class CommitSellView(APIView):
         stockAccount.shares -= shares
         stockAccount.save()
         
-        lastTransaction = Transactions.objects.last()
 
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNum,
+            transactionNum=transactionNum,
             userCommand='remove',
             userId=userId,
             amount=amount
@@ -196,6 +195,7 @@ class CancelSellView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find most recent sell in the last 60 seconds, if one exists
         recentSell = Transactions.objects.filter(
@@ -207,13 +207,12 @@ class CancelSellView(APIView):
         ).first()
 
         if recentSell is None:
-            lastTransaction = Transactions.objects.last()
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='CANCEL_SELL',
                 userId=userId,
                 errorEvent="You don't have a recent sell to cancel."
