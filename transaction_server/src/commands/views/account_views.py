@@ -11,6 +11,7 @@ class AddView(APIView):
         # Get request data
         userId = request.data.get("userId")
         amount = float(request.data.get("amount"))
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find or create user account
         account = Account.objects.filter(
@@ -25,12 +26,11 @@ class AddView(APIView):
         account.save()
 
         # Log transaction
-        lastTransaction = Transactions.objects.last()
         transaction = Transactions(
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNum, #TODO
+            transactionNum=transactionNum, #TODO
             userCommand='add',
             userId=userId,
             amount=account.balance
@@ -49,6 +49,7 @@ class DisplaySummaryView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
+        
 
         # Find user account
         userAccount = Account.objects.filter(

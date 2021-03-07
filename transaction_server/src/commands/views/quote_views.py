@@ -9,10 +9,10 @@ class QuoteView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Retrieve quote
-        lastTransaction = Transactions.objects.last()
-        quote = get_quote(userId, stockSymbol,lastTransaction.transactionNum,False)
+        quote = get_quote(userId, stockSymbol,transactionNum,False)
 
         # Return quote
         data = {

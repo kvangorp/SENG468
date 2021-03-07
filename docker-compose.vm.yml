@@ -7,6 +7,12 @@ services:
     ports:
       - "27017:27017"
 
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+
   server:
     container_name: transaction_server
     build: ./transaction_server
@@ -14,10 +20,69 @@ services:
     volumes:
       - ./transaction_server/src:/code
     ports:
-      - "8000:8000"
-      - "4444:4444"
+      - "8001:8000"
+      - "4445:4444"
     depends_on:
       - mongodb
+      - redis
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=192.168.4.2
+
+  server2:
+    container_name: transaction_server2
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8002:8000"
+      - "4446:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+ 
+  server3:
+    container_name: transaction_server3
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8003:8000"
+      - "4447:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+
+  server4:
+    container_name: transaction_server4
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8004:8000"
+      - "4448:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+
+  nginx:
+    build: ./transaction_server/nginx
+    ports: 
+      - "8080:80"
+    depends_on:
+    - server
+    - server2
+    - server3
+    - server4

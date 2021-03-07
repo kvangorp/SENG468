@@ -11,13 +11,13 @@ class SetSellAmountView(APIView):
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
         amount = float(request.data.get("amount"))
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find stock account
         stockAccount = Stock.objects.filter(
             userId=userId,
             stockSymbol=stockSymbol
         ).first()
-        lastTransaction = Transactions.objects.last()
 
         # return if user doesn't have any or enough stocks
         if stockAccount is None:
@@ -26,7 +26,7 @@ class SetSellAmountView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='SET_SELL_AMOUNT',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -40,7 +40,7 @@ class SetSellAmountView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='SET_SELL_AMOUNT',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -80,7 +80,7 @@ class SetSellAmountView(APIView):
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNum, 
+            transactionNum=transactionNum, 
             userCommand='remove',
             userId=userId,
             amount=amount
@@ -95,6 +95,7 @@ class SetSellTriggerView(APIView):
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
         amount = float(request.data.get("amount"))
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find trigger
         trigger = Trigger.objects.filter(
@@ -103,7 +104,6 @@ class SetSellTriggerView(APIView):
             isBuy=False
         ).first()
 
-        lastTransaction = Transactions.objects.last()
 
         # If trigger doesn't exist, create new; else, update amount
         if trigger is None:
@@ -112,7 +112,7 @@ class SetSellTriggerView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='SET_SELL_TRIGGER',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -132,6 +132,7 @@ class CancelSetSellView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
+        transactionNum = int(request.data.get("transactionNum"))
 
         # Find and delete trigger
         trigger = Trigger.objects.filter(
@@ -140,7 +141,6 @@ class CancelSetSellView(APIView):
             isBuy=False
         ).first()
 
-        lastTransaction = Transactions.objects.last()
 
         if trigger is None:
             # Log error event to transaction
@@ -148,7 +148,7 @@ class CancelSetSellView(APIView):
                 type='errorEvent',
                 timestamp=int(time()*1000),
                 server='TS',
-                transactionNum=lastTransaction.transactionNum,
+                transactionNum=transactionNum,
                 userCommand='CANCEL_SET_SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
@@ -168,13 +168,12 @@ class CancelSetSellView(APIView):
         stockAccount.reserved -= amount
         stockAccount.save()
 
-        lastTransaction = Transactions.objects.last()
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
             timestamp=int(time()*1000),
             server='TS',
-            transactionNum=lastTransaction.transactionNum, 
+            transactionNum=transactionNum, 
             userCommand='add',
             userId=userId,
             amount=amount
