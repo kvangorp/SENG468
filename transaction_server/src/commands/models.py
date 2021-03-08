@@ -25,7 +25,14 @@ class PendingBuy(models.Model):
     timestamp = models.BigIntegerField(default=0)
     userId = models.CharField(max_length=50)
     stockSymbol = models.CharField(max_length=50, null=False)
-    dollarAmount = models.FloatField(blank=True)
+    dollarAmount = models.FloatField(default=0.0)
+
+class PendingSell(models.Model):
+    timestamp = models.BigIntegerField(default=0)
+    userId = models.CharField(max_length=50)
+    stockSymbol = models.CharField(max_length=50, null=False)
+    dollarAmount = models.FloatField(default=0.0)
+    shares = models.FloatField(default=0.0)
 
 class Trigger(models.Model):
     userId = models.CharField(max_length=50)
