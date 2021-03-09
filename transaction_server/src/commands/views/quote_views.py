@@ -16,7 +16,7 @@ class QuoteView(APIView):
 
         # Return quote
         data = {
-            "quote": quote.quote,
-            "stockSymbol": quote.stockSymbol
+            "quote": quote,
+            "stockSymbol": stockSymbol
         }
         return Response(data, status=status.HTTP_200_OK)

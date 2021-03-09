@@ -1,37 +1,49 @@
 import socket, sys, os
+import redis
+from time import time
+from django.conf import settings
 from .models import Quote
 from transactions.models import Transactions
+redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+EXPIRY_SECS = 60
 
 def get_quote(id, sym,transactionNum=1,isSysEvent=False):
-    # Get quote from quote server
-    data = quoteClient(sym, id)
-    elements = data.split(',')
+    res = redis_instance.hgetall(sym)
+    if not res:
+        # If quote is not in redis database
+        # Get quote from quote server
+        data = quoteClient(sym, id)
+        elements = data.split(',')
+        stockSymbol = elements[1]
 
-    quote, created = Quote.objects.get_or_create(
-        stockSymbol=elements[1]
-    )
-    quote.quote = float(elements[0])
-    quote.stockSymbol = elements[1]
-    quote.userId = elements[2]
-    quote.timestamp = int(elements[3])
-    quote.cryptokey = elements[4]
-    quote.save()
-    
+        # Add quote to redis database
+        quote = {
+            "quote": float(elements[0]),
+            "stockSymbol": stockSymbol,
+            "userId": elements[2],
+            "timestamp": int(elements[3]),
+            "cryptoKey": elements[4],
+        }
+        redis_instance.hmset(stockSymbol, quote)
+        redis_instance.expire(stockSymbol, EXPIRY_SECS)
+        res = redis_instance.hgetall(sym)
+    print(res)
+
     # Log quote server transaction
     transaction = Transactions(
         type="quoteServer",
-        timestamp=int(elements[3]),
+        timestamp=int(time()*1000),
         server='QS',
-        transactionNum=transactionNum, #TODO
-        price=float(elements[0]),
-        stockSymbol=elements[1],
-        userId=elements[2],
-        quoteServerTime=int(elements[3]),
-        cryptoKey=elements[4]
+        transactionNum=transactionNum, 
+        price=res["quote"],
+        stockSymbol=res["stockSymbol"],
+        userId=id,
+        quoteServerTime=res["timestamp"],
+        cryptoKey=res["cryptoKey"]
     )
     transaction.save()
 
-    return quote
+    return float(res["quote"])
 
 def quoteClient(sym, id):
     # Create the socket
