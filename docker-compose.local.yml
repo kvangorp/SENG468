@@ -50,6 +50,58 @@ services:
       - "4446:4444"
     depends_on:
       - mongodb
+      - quote_server
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=quote_server
+
+  server3:
+    container_name: transaction_server3
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8003:8000"
+      - "4447:4444"
+    depends_on:
+      - mongodb
+      - quote_server
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=quote_server
+  
+  server4:
+    container_name: transaction_server4
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8004:8000"
+      - "4448:4444"
+    depends_on:
+      - mongodb
+      - quote_server
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=quote_server
+
+  server5:
+    container_name: transaction_server5
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8005:8000"
+      - "4449:4444"
+    depends_on:
+      - mongodb
+      - quote_server
       - redis
     entrypoint: /entrypoint.sh
     environment: 
@@ -63,4 +115,7 @@ services:
     depends_on:
     - server
     - server2
+    - server3
+    - server4
+    - server5
 
