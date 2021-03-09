@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from ..models import Account, Stock, Quote
+from ..models import Account, Stock, Quote, PendingSell
 from transactions.models import Transactions
 from rest_framework import status
 from ..utils import get_quote
@@ -11,7 +11,7 @@ class SellView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        amount = float(request.data.get("amount"))
+        dollarAmount = float(request.data.get("amount"))
         transactionNum = int(request.data.get("transactionNum"))
 
 
@@ -31,7 +31,7 @@ class SellView(APIView):
                 userCommand='SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
-                amount=amount,
+                amount=dollarAmount,
                 errorEvent="You don't have this stock."
             )
             transaction.save()
@@ -41,7 +41,7 @@ class SellView(APIView):
         # Calculate number of stocks to sell
         stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=transactionNum, isSysEvent=False)
         stockPrice = stockQuote.quote
-        shares = amount/stockPrice
+        shares = dollarAmount/stockPrice
         
         # Check that the user has enough stocks to continue with sell
         if stockAccount.shares < shares:
@@ -54,11 +54,21 @@ class SellView(APIView):
                 userCommand='SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
-                amount=amount,
+                amount=dollarAmount,
                 errorEvent="You don't have enough shares."
             )
             transaction.save()
             return Response("You don't have enough shares.", status=status.HTTP_412_PRECONDITION_FAILED)
+
+        # Record pending sell
+        pendingSell = PendingSell(
+            userId=userId,
+            stockSymbol=stockSymbol,
+            timestamp=int(time()*1000),
+            dollarAmount=dollarAmount,
+            shares=shares
+        )
+        pendingSell.save()
         
         return Response(status=status.HTTP_200_OK)
 
@@ -69,11 +79,16 @@ class CommitSellView(APIView):
         userId = request.data.get("userId")
         transactionNum = int(request.data.get("transactionNum"))
 
-        # Get most recent sell transaction
-        sellTransaction = self.mostRecentValidSell(userId)
+        # Find most recent pending sell from within the last 60 seconds, if one exists
+        pendingSell = PendingSell.objects.filter(
+            userId=userId,
+            timestamp__gte=int((time() - 60)*1000)
+        ).order_by(
+            '-timestamp'
+        ).first()
 
 
-        if sellTransaction is None:
+        if pendingSell is None:
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
@@ -87,8 +102,9 @@ class CommitSellView(APIView):
             transaction.save()
             return Response("There is no sell to commit.", status=status.HTTP_412_PRECONDITION_FAILED)
 
-        amount = sellTransaction.amount
-        stockSymbol = sellTransaction.stockSymbol
+        stockSymbol = pendingSell.stockSymbol
+        dollarAmount = pendingSell.dollarAmount
+        shares = pendingSell.shares
 
         # Find user account
         userAccount = Account.objects.filter(
@@ -101,12 +117,6 @@ class CommitSellView(APIView):
             stockSymbol=stockSymbol
         ).first()
 
-        # TODO review switching to checking quote cash instead
-        # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=transactionNum, isSysEvent=False)
-        stockPrice = stockQuote.quote
-        shares = amount/stockPrice
-
         if stockAccount is None:
             # Log error event to transaction
             transaction = Transactions(
@@ -117,11 +127,12 @@ class CommitSellView(APIView):
                 userCommand='COMMIT_SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
-                amount=amount,
+                amount=dollarAmount,
                 errorEvent="You don't have an account."
             )
             transaction.save()
             return Response("Account doesn't exist.", status=status.HTTP_412_PRECONDITION_FAILED)
+        
         if stockAccount.shares < shares:
             # Log error event to transaction
             transaction = Transactions(
@@ -132,14 +143,14 @@ class CommitSellView(APIView):
                 userCommand='COMMIT_SELL',
                 userId=userId,
                 stockSymbol=stockSymbol,
-                amount=amount,
+                amount=dollarAmount,
                 errorEvent="You don't have enough stocks."
             )
             transaction.save()
             return Response("You don't have enough stocks to sell.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Increment user balance amount
-        userAccount.balance += amount
+        userAccount.balance += dollarAmount
         userAccount.save()
 
         # Remove stock shares from stock account
@@ -155,40 +166,14 @@ class CommitSellView(APIView):
             transactionNum=transactionNum,
             userCommand='remove',
             userId=userId,
-            amount=amount
+            amount=dollarAmount
         )
         transaction.save()
 
+        # Remove pending sell
+        pendingSell.delete()
+
         return Response(status=status.HTTP_200_OK)
-
-
-    def mostRecentValidSell(self, userId):
-        # Find most recent sell in the last 60 seconds, if one exists
-        recentSell = Transactions.objects.filter(
-            userId=userId,
-            userCommand="SELL",
-            timestamp__gte=int((time() - 60)*1000)
-        ).order_by(
-            '-timestamp'
-        ).first()
-
-        # If no buy transactions exist in last 60 seconds, return None
-        if recentSell is None:
-            return None
-
-        # Check for a recent cancel
-        recentCancel = Transactions.objects.filter(
-            userId=userId,
-            userCommand="CANCEL_SELL"
-        ).order_by(
-            '-timestamp'
-        ).first()
-
-        # If a cancel transaction occured after the most recent buy, return None
-        if recentCancel and recentCancel.timestamp > recentSell.timestamp:
-            return None
-
-        return recentSell
         
         
 class CancelSellView(APIView):
@@ -197,16 +182,15 @@ class CancelSellView(APIView):
         userId = request.data.get("userId")
         transactionNum = int(request.data.get("transactionNum"))
 
-        # Find most recent sell in the last 60 seconds, if one exists
-        recentSell = Transactions.objects.filter(
+        # Find most recent pending sell from within the last 60 seconds, if one exists
+        pendingSell = PendingSell.objects.filter(
             userId=userId,
-            userCommand="SELL",
             timestamp__gte=int((time() - 60)*1000)
         ).order_by(
             '-timestamp'
         ).first()
 
-        if recentSell is None:
+        if pendingSell is None:
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
@@ -219,5 +203,8 @@ class CancelSellView(APIView):
             )
             transaction.save()
             return Response("There is no recent sell to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
+
+        # Remove pending sell
+        pendingSell.delete()
             
         return Response(status=status.HTTP_200_OK)
