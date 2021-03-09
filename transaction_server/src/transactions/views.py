@@ -1,22 +1,21 @@
 from django.shortcuts import render
-from rest_framework import mixins, generics
-from .serializers import TransactionSerializer
-from .models import Transactions
-from django_filters.rest_framework import DjangoFilterBackend
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
+import redis, os
+from time import time
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
+redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
-class TransactionView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
-    serializer_class = TransactionSerializer
-    queryset = Transactions.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['userId', 'userCommand']
+class TransactionView(APIView):
+    def get(self, request):
+        userId = request.data.get("userId")
+        res = redis_instance.hgetall()
 
-    @method_decorator(cache_page(60 * 15))
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    @method_decorator(cache_page(60 * 15))
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def post(self, request):
+        data = request.data
+        # hash_key = timestamp + server_number
+        hash_key = str(data["timestamp"]) + os.environ['serverNum']
+        redis_instance.hmset(hash_key, data)
+        return Response(status=status.HTTP_200_OK)

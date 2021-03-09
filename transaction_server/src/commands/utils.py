@@ -32,7 +32,7 @@ def get_quote(id, sym,transactionNum=1,isSysEvent=False):
     # Log quote server transaction
     transaction = Transactions(
         type="quoteServer",
-        timestamp=int(time()*1000),
+        timestamp=int(time())*1000,
         server='QS',
         transactionNum=transactionNum, 
         price=res["quote"],

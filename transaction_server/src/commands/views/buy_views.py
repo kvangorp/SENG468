@@ -24,7 +24,7 @@ class BuyView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='BUY',
@@ -40,7 +40,7 @@ class BuyView(APIView):
         pendingBuy = PendingBuy(
             userId=userId,
             stockSymbol=stockSymbol,
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             dollarAmount=amount
         )
         pendingBuy.save()
@@ -66,7 +66,7 @@ class CommitBuyView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='COMMIT_BUY',
@@ -88,7 +88,7 @@ class CommitBuyView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='COMMIT_BUY',
@@ -104,7 +104,7 @@ class CommitBuyView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='COMMIT_BUY',
@@ -139,7 +139,7 @@ class CommitBuyView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             server='TS',
             transactionNum=transactionNum, #TODO
             userCommand='remove',
@@ -172,7 +172,7 @@ class CancelBuyView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='CANCEL_BUY',

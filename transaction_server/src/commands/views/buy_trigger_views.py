@@ -24,7 +24,7 @@ class SetBuyAmountView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='SET_BUY_AMOUNT',
@@ -63,7 +63,7 @@ class SetBuyAmountView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             server='TS',
             transactionNum=transactionNum,
             userCommand='remove',
@@ -93,7 +93,7 @@ class SetBuyTriggerView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='SET_BUY_TRIGGER',
@@ -130,7 +130,7 @@ class CancelSetBuyView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='CANCEL_SET_BUY',
@@ -155,7 +155,7 @@ class CancelSetBuyView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             server='TS',
             transactionNum=transactionNum,
             userCommand='add',

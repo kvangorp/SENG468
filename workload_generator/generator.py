@@ -11,7 +11,7 @@ TRANSACTIONNUM = 0
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transactionNum=1):
     log = {
         'type': 'userCommand',
-        'timestamp': int(time()*1000),
+        'timestamp': int(time())*1000,
         'server': WEBSERVER,
         'transactionNum': transactionNum,
         'userCommand': command,

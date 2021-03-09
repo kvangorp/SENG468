@@ -24,7 +24,7 @@ class SetSellAmountView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='SET_SELL_AMOUNT',
@@ -38,7 +38,7 @@ class SetSellAmountView(APIView):
         if stockAccount.shares < amount:
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='SET_SELL_AMOUNT',
@@ -78,7 +78,7 @@ class SetSellAmountView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             server='TS',
             transactionNum=transactionNum, 
             userCommand='remove',
@@ -110,7 +110,7 @@ class SetSellTriggerView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='SET_SELL_TRIGGER',
@@ -146,7 +146,7 @@ class CancelSetSellView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='CANCEL_SET_SELL',
@@ -171,7 +171,7 @@ class CancelSetSellView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             server='TS',
             transactionNum=transactionNum, 
             userCommand='add',

@@ -25,7 +25,7 @@ class SellView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='SELL',
@@ -46,7 +46,7 @@ class SellView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='SELL',
@@ -62,7 +62,7 @@ class SellView(APIView):
         pendingSell = PendingSell(
             userId=userId,
             stockSymbol=stockSymbol,
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             dollarAmount=dollarAmount,
             shares=shares
         )
@@ -90,7 +90,7 @@ class CommitSellView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='COMMIT_SELL',
@@ -119,7 +119,7 @@ class CommitSellView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='COMMIT_SELL',
@@ -135,7 +135,7 @@ class CommitSellView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='COMMIT_SELL',
@@ -159,7 +159,7 @@ class CommitSellView(APIView):
         # Log account transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             server='TS',
             transactionNum=transactionNum,
             userCommand='remove',
@@ -192,7 +192,7 @@ class CancelSellView(APIView):
             # Log error event to transaction
             transaction = Transactions(
                 type='errorEvent',
-                timestamp=int(time()*1000),
+                timestamp=int(time())*1000,
                 server='TS',
                 transactionNum=transactionNum,
                 userCommand='CANCEL_SELL',

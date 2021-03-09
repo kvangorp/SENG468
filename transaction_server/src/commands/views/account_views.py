@@ -28,7 +28,7 @@ class AddView(APIView):
         # Log transaction
         transaction = Transactions(
             type="accountTransaction",
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             server='TS',
             transactionNum=transactionNum, #TODO
             userCommand='add',
