@@ -77,6 +77,22 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
 
+  server5:
+    container_name: transaction_server5
+    build: ./transaction_server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8005:8000"
+      - "4449:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+
   nginx:
     build: ./transaction_server/nginx
     ports: 
@@ -86,3 +102,4 @@ services:
     - server2
     - server3
     - server4
+    - server5
