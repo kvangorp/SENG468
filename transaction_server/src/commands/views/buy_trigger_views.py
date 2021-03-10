@@ -2,7 +2,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Trigger
 from ..transactionsLogger import log_account_transaction, log_error_event
-from transactions.models import Transactions
 from rest_framework import status
 from time import time
 

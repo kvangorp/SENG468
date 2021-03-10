@@ -2,7 +2,6 @@ import socket, sys, os
 import redis
 from time import time
 from django.conf import settings
-from transactions.models import Transactions
 from .transactionsLogger import log_quote_server_transaction
 redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 EXPIRY_SECS = 60

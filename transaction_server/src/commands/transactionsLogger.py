@@ -34,10 +34,10 @@ def log_account_transaction(transactionNum, action, username, funds):
 
 def log_error_event(transactionNum, command, username, errorMessage):
     transaction = {
-        "type":"errorEvent",
-        "timestamp":int(time())*1000,
+        "type": "errorEvent",
+        "timestamp": int(time())*1000,
         "server":'TS',
-        "transactionNum":transactionNum,
+        "transactionNum": transactionNum,
         "command": command,
         "username": username,
         "errorMessage": errorMessage
