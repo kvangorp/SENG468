@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Trigger, Stock
-from ..transactionsLogger import log_account_transaction
+from ..transactionsLogger import log_account_transaction, log_error_event
 from transactions.models import Transactions
 from rest_framework import status
 from time import time
@@ -23,32 +23,10 @@ class SetSellAmountView(APIView):
         # return if user doesn't have any or enough stocks
         if stockAccount is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time())*1000,
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_SELL_AMOUNT',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have any stock."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "You don't have any stock.")
             return Response("You don't have any stock.", status=status.HTTP_412_PRECONDITION_FAILED)
         if stockAccount.shares < amount:
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time())*1000,
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_SELL_AMOUNT',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have enough stocks."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "You don't have enough stocks")
             return Response("Nah ah! You don't have enough stocks.", status=status.HTTP_412_PRECONDITION_FAILED)
         
         # set aside stocks for reserved and decrement shares
@@ -100,18 +78,7 @@ class SetSellTriggerView(APIView):
         # If trigger doesn't exist, create new; else, update amount
         if trigger is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time())*1000,
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_SELL_TRIGGER',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have any trigger set."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_SELL_TRIGGER", userId, "You don't have any trigger set.")
             return Response("You don't have any trigger set.", status=status.HTTP_412_PRECONDITION_FAILED)
         else:
             trigger.triggerPoint = amount
@@ -135,17 +102,7 @@ class CancelSetSellView(APIView):
 
         if trigger is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time())*1000,
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='CANCEL_SET_SELL',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                errorEvent="You don't have a trigger to cancel."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "CANCEL_SET_SELL", userId, "You don't have a trigger to cancel.")
             return Response("You don't a trigger to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
         
         amount = trigger.amount

@@ -31,3 +31,16 @@ def log_account_transaction(transactionNum, action, username, funds):
     }
     hash_key = str(transaction["timestamp"]) + os.environ['serverNum']
     redis_instance.hmset(hash_key, transaction)
+
+def log_error_event(transactionNum, command, username, errorMessage):
+    transaction = {
+        "type":"errorEvent",
+        "timestamp":int(time())*1000,
+        "server":'TS',
+        "transactionNum":transactionNum,
+        "command": command,
+        "username": username,
+        "errorMessage": errorMessage
+    }
+    hash_key = str(transaction["timestamp"]) + os.environ['serverNum']
+    redis_instance.hmset(hash_key, transaction)
