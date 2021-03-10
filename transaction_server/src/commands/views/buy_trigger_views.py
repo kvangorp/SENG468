@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Trigger
+from ..transactionsLogger import log_account_transaction
 from transactions.models import Transactions
 from rest_framework import status
 from time import time
@@ -17,7 +18,6 @@ class SetBuyAmountView(APIView):
         userAccount = Account.objects.filter(
             userId=userId,
         ).first()
-
 
         # Check user account balance and decrement balance and increment pending 
         if userAccount.balance < amount:
@@ -61,16 +61,7 @@ class SetBuyAmountView(APIView):
         trigger.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time())*1000,
-            server='TS',
-            transactionNum=transactionNum,
-            userCommand='remove',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, amount)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -125,7 +116,6 @@ class CancelSetBuyView(APIView):
             isBuy=True
         ).first()
 
-
         if trigger is None:
             # Log error event to transaction
             transaction = Transactions(
@@ -153,15 +143,6 @@ class CancelSetBuyView(APIView):
         userAccount.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time())*1000,
-            server='TS',
-            transactionNum=transactionNum,
-            userCommand='add',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'add', userId, amount)
 
         return Response(status=status.HTTP_200_OK)

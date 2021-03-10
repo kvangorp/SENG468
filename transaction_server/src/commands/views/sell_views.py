@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Stock, Quote, PendingSell
+from ..transactionsLogger import log_account_transaction
 from transactions.models import Transactions
 from rest_framework import status
 from ..quoteHandler import get_quote
@@ -38,7 +39,7 @@ class SellView(APIView):
             return Response("You don't have this stock.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Calculate number of stocks to sell
-        stockPrice = get_quote(id=userId, sym=stockSymbol, transactionNum=transactionNum, isSysEvent=False)
+        stockPrice = get_quote(userId, stockSymbol, transactionNum, False)
         shares = dollarAmount/stockPrice
         
         # Check that the user has enough stocks to continue with sell
@@ -154,19 +155,9 @@ class CommitSellView(APIView):
         # Remove stock shares from stock account
         stockAccount.shares -= shares
         stockAccount.save()
-        
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time())*1000,
-            server='TS',
-            transactionNum=transactionNum,
-            userCommand='remove',
-            userId=userId,
-            amount=dollarAmount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, dollarAmount)
 
         # Remove pending sell
         pendingSell.delete()

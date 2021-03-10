@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import Account, Stock, Trigger
+from ..transactionsLogger import log_account_transaction
 from transactions.models import Transactions
 from time import time
 
@@ -26,17 +27,8 @@ class AddView(APIView):
         account.save()
 
         # Log transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time())*1000,
-            server='TS',
-            transactionNum=transactionNum, #TODO
-            userCommand='add',
-            userId=userId,
-            amount=account.balance
-        )
-        transaction.save()
-        
+        log_account_transaction(transactionNum, 'add', userId, amount)
+       
         return Response(status=status.HTTP_200_OK)
 
 

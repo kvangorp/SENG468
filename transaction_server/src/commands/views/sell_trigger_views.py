@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Trigger, Stock
+from ..transactionsLogger import log_account_transaction
 from transactions.models import Transactions
 from rest_framework import status
 from time import time
@@ -76,16 +77,7 @@ class SetSellAmountView(APIView):
         trigger.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time())*1000,
-            server='TS',
-            transactionNum=transactionNum, 
-            userCommand='remove',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, amount)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -141,7 +133,6 @@ class CancelSetSellView(APIView):
             isBuy=False
         ).first()
 
-
         if trigger is None:
             # Log error event to transaction
             transaction = Transactions(
@@ -156,6 +147,7 @@ class CancelSetSellView(APIView):
             )
             transaction.save()
             return Response("You don't a trigger to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
+        
         amount = trigger.amount
         trigger.delete()
 
@@ -169,15 +161,6 @@ class CancelSetSellView(APIView):
         stockAccount.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time())*1000,
-            server='TS',
-            transactionNum=transactionNum, 
-            userCommand='add',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'add', userId, amount)
 
         return Response(status=status.HTTP_200_OK)

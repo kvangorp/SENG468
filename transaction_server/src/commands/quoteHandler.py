@@ -26,10 +26,10 @@ def get_quote(username, stockSymbol, transactionNum=1, isSysEvent=False):
         redis_instance.hmset(stockSymbol, quote)
         redis_instance.expire(stockSymbol, EXPIRY_SECS)
         res = redis_instance.hgetall(stockSymbol)
-    print(res)
 
-    # Log quote server transaction
-    log_quote_server_transaction(transactionNum, res["quote"], res["stockSymbol"], username, res["timestamp"], res["cryptoKey"])
+        # Log quote server transaction
+        log_quote_server_transaction(transactionNum, res["quote"], res["stockSymbol"], username, res["timestamp"], res["cryptoKey"])
+        print(res)
 
     return float(res["quote"])
 

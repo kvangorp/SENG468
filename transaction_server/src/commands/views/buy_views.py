@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Stock, Quote, PendingBuy
+from ..transactionsLogger import log_account_transaction
 from transactions.models import Transactions
 from rest_framework import status
 from ..quoteHandler import get_quote
@@ -137,16 +138,7 @@ class CommitBuyView(APIView):
         stockAccount.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time())*1000,
-            server='TS',
-            transactionNum=transactionNum, #TODO
-            userCommand='remove',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, amount)
 
         # Remove pending buy
         pendingBuy.delete()
