@@ -14,10 +14,10 @@ def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transact
         'timestamp': int(time())*1000,
         'server': WEBSERVER,
         'transactionNum': transactionNum,
-        'userCommand': command,
+        'command': command,
+        'username': userid,
         'stockSymbol': stockSymbol,
-        'userId': userid,
-        'amount': amount
+        'funds': amount
     }
     logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
     print(logger)
@@ -298,11 +298,11 @@ def dumplog(userid='', filename=''):
             'userId': userid,
             'transactionNum': transactionNum
         }
-        res = requests.get('http://localhost:8080/api/transactions/', params=data)
+        res = requests.post('http://localhost:8080/api/commands/dumplog/', params=data)
     else:
-        res = requests.get('http://localhost:8080/api/transactions/') 
-    
-    XMLgen.createDocument(filename, res.json())
+        res = requests.post('http://localhost:8080/api/commands/dumplog/') 
+    print(res.json())
+    # XMLgen.createDocument(filename, res.json())
 
 
 def display_summary(userId):

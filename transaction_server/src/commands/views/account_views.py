@@ -5,6 +5,10 @@ from ..models import Account, Stock, Trigger
 from ..transactionsLogger import log_account_transaction
 from transactions.models import Transactions
 from time import time
+import redis, os
+from django.conf import settings
+
+redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
 class AddView(APIView):
 
@@ -34,14 +38,22 @@ class AddView(APIView):
 
 class DumplogView(APIView):
     def post(self, request):
-        print('dumplog')
+        userId = request.data.get("userId")
+        keys = redis_instance.keys()
+        values = []
+        keys.sort()
+        for key in keys:
+            value = redis_instance.hgetall(key)
+            print(value)
+            # print(value['username'])
+            values.append(value)
+        return Response(values, status=status.HTTP_200_OK)
 
 
 class DisplaySummaryView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
-        
 
         # Find user account
         userAccount = Account.objects.filter(
