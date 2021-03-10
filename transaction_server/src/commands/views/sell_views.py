@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from ..models import Account, Stock, Quote, PendingSell
 from transactions.models import Transactions
 from rest_framework import status
-from ..utils import get_quote
+from ..quoteHandler import get_quote
 from time import time
 
 class SellView(APIView):

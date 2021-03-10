@@ -1,4 +1,4 @@
-from .utils import get_quote
+from .quoteHandler import get_quote
 from .models import Account, Trigger, Quote, Stock
 import time
 
