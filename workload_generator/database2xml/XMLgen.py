@@ -81,7 +81,7 @@ def quoteServerGen(input):
     quoteServerTime.text = input['quoteTime']
 
     cryptokey = etree.SubElement(quoteServer, "cryptokey") 
-    cryptokey.text = input['cryptoKey']
+    cryptokey.text = input['cryptokey']
 
     return quoteServer
 
@@ -154,12 +154,6 @@ def errorEventGen(input):
 
     username = etree.SubElement(errorEvent, "username") 
     username.text = input['username']
-
-    stockSymbol = etree.SubElement(errorEvent, "stockSymbol") 
-    stockSymbol.text = input['stockSymbol']
-
-    filename = etree.SubElement(errorEvent, "filename") 
-    filename.text = input['filename']
 
     errorMessage = etree.SubElement(errorEvent, "errorMessage") 
     errorMessage.text = input['errorMessage']
@@ -260,7 +254,7 @@ def createDocument(filename, transaction_list):
                 'stockSymbol': row['stockSymbol'],
                 'user': row['username'],
                 'quoteTime': str(row['quoteServerTime']),
-                'cryptoKey': row['cryptoKey']
+                'cryptokey': row['cryptokey']
             }
             eTree = quoteServerGen(input)
             log.append(eTree)
@@ -295,8 +289,6 @@ def createDocument(filename, transaction_list):
                 'transactionNum': str(row['transactionNum']),
                 'command': row['command'],
                 'username': row['username'],
-                'stockSymbol': row['stockSymbol'],
-                'filename': filename,
                 'errorMessage': str(row['errorMessage']),
             }
             eTree = errorEventGen(input)
