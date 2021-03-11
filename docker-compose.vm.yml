@@ -28,6 +28,7 @@ services:
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=192.168.4.2
+      - serverNum=1
 
   server2:
     container_name: transaction_server2
@@ -44,6 +45,7 @@ services:
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=192.168.4.2
+      - serverNum=2
  
   server3:
     container_name: transaction_server3
@@ -60,6 +62,7 @@ services:
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=192.168.4.2
+      - serverNum=3
 
   server4:
     container_name: transaction_server4
@@ -76,6 +79,7 @@ services:
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=192.168.4.2
+      - serverNum=4
 
   server5:
     container_name: transaction_server5
@@ -92,6 +96,7 @@ services:
     entrypoint: /entrypoint.sh
     environment: 
       - quoteServerHost=192.168.4.2
+      - serverNum=5
 
   nginx:
     build: ./transaction_server/nginx

@@ -302,7 +302,7 @@ def dumplog(userid='', filename=''):
     else:
         res = requests.post('http://localhost:8080/api/commands/dumplog/') 
     print(res.json())
-    # XMLgen.createDocument(filename, res.json())
+    XMLgen.createDocument(filename, res.json())
 
 
 def display_summary(userId):
