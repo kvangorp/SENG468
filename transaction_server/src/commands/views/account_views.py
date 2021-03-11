@@ -5,7 +5,7 @@ from ..models import Account, Stock, Trigger
 from ..transactionsLogger import log_account_transaction
 from transactions.models import Transactions
 from time import time
-import redis, os
+import redis, os, json
 from django.conf import settings
 
 redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
@@ -43,10 +43,11 @@ class DumplogView(APIView):
         values = []
         keys.sort()
         for key in keys:
-            value = redis_instance.hgetall(key)
+            value = redis_instance.smembers(key)
             print(value)
             # print(value['username'])
             values.append(value)
+        print(values)
         return Response(values, status=status.HTTP_200_OK)
 
 

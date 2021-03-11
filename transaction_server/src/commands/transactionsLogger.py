@@ -1,5 +1,5 @@
 import socket, sys, os
-import redis
+import redis, json
 from time import time
 from django.conf import settings
 redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
@@ -17,7 +17,7 @@ def log_quote_server_transaction(transactionNum, price, stockSymbol, username, q
         "cryptokey": cryptokey
     }
     hash_key = str(transaction["timestamp"]*10) + os.environ['serverNum']
-    redis_instance.hmset(hash_key, transaction)
+    redis_instance.sadd(hash_key, json.dumps(transaction))
 
 def log_account_transaction(transactionNum, action, username, funds):
     transaction = {
@@ -30,7 +30,7 @@ def log_account_transaction(transactionNum, action, username, funds):
         "funds": funds
     }
     hash_key = str(transaction["timestamp"]*10) + os.environ['serverNum']
-    redis_instance.hmset(hash_key, transaction)
+    redis_instance.sadd(hash_key, json.dumps(transaction))
 
 def log_error_event(transactionNum, command, username, errorMessage):
     transaction = {
@@ -43,4 +43,4 @@ def log_error_event(transactionNum, command, username, errorMessage):
         "errorMessage": errorMessage
     }
     hash_key = str(transaction["timestamp"]*10) + os.environ['serverNum']
-    redis_instance.hmset(hash_key, transaction)
+    redis_instance.sadd(hash_key, json.dumps(transaction))

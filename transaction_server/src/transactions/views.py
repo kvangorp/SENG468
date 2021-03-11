@@ -1,5 +1,5 @@
 from django.shortcuts import render
-import redis, os
+import redis, os, json
 from time import time
 from django.conf import settings
 from rest_framework.views import APIView
@@ -22,5 +22,5 @@ class TransactionView(APIView):
         data = request.data
         # hash_key = timestamp + server_number
         hash_key = str(data["timestamp"]) + os.environ['serverNum']
-        redis_instance.hmset(hash_key, data)
+        redis_instance.sadd(hash_key, json.dumps(data))
         return Response(status=status.HTTP_200_OK)
