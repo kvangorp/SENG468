@@ -21,6 +21,6 @@ class TransactionView(APIView):
     def post(self, request):
         data = request.data
         # hash_key = timestamp + server_number
-        hash_key = str(data["timestamp"]) + os.environ['serverNum']
+        hash_key = str(data["transactionNum"])
         redis_instance.sadd(hash_key, json.dumps(data))
         return Response(status=status.HTTP_200_OK)

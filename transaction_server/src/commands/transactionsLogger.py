@@ -16,7 +16,7 @@ def log_quote_server_transaction(transactionNum, price, stockSymbol, username, q
         "quoteServerTime": quoteServerTime,
         "cryptokey": cryptokey
     }
-    hash_key = str(transaction["timestamp"]*10) + os.environ['serverNum']
+    hash_key = str(transaction["transactionNum"])
     redis_instance.sadd(hash_key, json.dumps(transaction))
 
 def log_account_transaction(transactionNum, action, username, funds):
@@ -29,7 +29,7 @@ def log_account_transaction(transactionNum, action, username, funds):
         "username": username,
         "funds": funds
     }
-    hash_key = str(transaction["timestamp"]*10) + os.environ['serverNum']
+    hash_key = str(transaction["transactionNum"])
     redis_instance.sadd(hash_key, json.dumps(transaction))
 
 def log_error_event(transactionNum, command, username, errorMessage):
@@ -42,5 +42,5 @@ def log_error_event(transactionNum, command, username, errorMessage):
         "username": username,
         "errorMessage": errorMessage
     }
-    hash_key = str(transaction["timestamp"]*10) + os.environ['serverNum']
+    hash_key = str(transaction["transactionNum"])
     redis_instance.sadd(hash_key, json.dumps(transaction))

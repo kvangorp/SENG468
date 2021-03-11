@@ -39,14 +39,15 @@ class AddView(APIView):
 class DumplogView(APIView):
     def post(self, request):
         userId = request.data.get("userId")
-        keys = redis_instance.keys()
+        keys_str = redis_instance.keys()
         values = []
-        keys.sort()
-        for key in keys:
-            value = redis_instance.smembers(key)
-            print(value)
-            # print(value['username'])
-            values.append(value)
+        keys_int = list(map(int, keys_str))
+        keys_int.sort()
+        for key in keys_int:
+            value_list = redis_instance.smembers(str(key))
+            for value in value_list:
+                print(value)
+                values.append(json.loads(value))
         print(values)
         return Response(values, status=status.HTTP_200_OK)
 
@@ -72,17 +73,17 @@ class DisplaySummaryView(APIView):
         )
 
         # Get transaction history
-        transactions= Transactions.objects.filter(
-            userId=userId
-        )
+        #transactions= Transactions.objects.filter(
+        #    userId=userId
+        #)
 
         # Return user summary
-        data = {
-            "userId": userId,
-            "balance": userAccount.balance,
-            "pending": userAccount.pending,
-            "stocks": stocks.values(),
-            "triggers": triggers.values(),
-            "transactions": transactions.values()
-        }
-        return Response(data, status=status.HTTP_200_OK)
+        #data = {
+        #    "userId": userId,
+        #    "balance": userAccount.balance,
+        #    "pending": userAccount.pending,
+        #    "stocks": stocks.values(),
+        #    "triggers": triggers.values(),
+        #    "transactions": transactions.values()
+        #}
+        return Response(status=status.HTTP_200_OK)
