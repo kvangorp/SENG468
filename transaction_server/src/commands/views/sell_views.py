@@ -11,8 +11,15 @@ class SellView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        dollarAmount = float(request.data.get("amount"))
+        dollarAmount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            dollarAmount = float(dollarAmount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "SELL", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
 
         # Find stock account

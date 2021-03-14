@@ -4,7 +4,7 @@ from database2xml import XMLgen
 from lxml import etree
 
 WEBSERVER = 'WS'
-file1 = open('./testfiles/10userWorkLoad.txt', 'r')
+file1 = open('./testfiles/1userWorkLoad.txt', 'r')
 Lines = file1.readlines()
 TRANSACTIONNUM = 0
 
@@ -33,55 +33,89 @@ def commandSwitch(command):
 
     if command[0] == 'ADD':
         print(command[0])
+        if len(command) < 3:
+            return
         add(command[1], command[2])
     elif command[0] == 'QUOTE': 
         print(command[0])
+        if len(command) < 3:
+            return
         quote(command[1], command[2])
     elif command[0] == 'BUY':
         print(command[0])
+        if len(command) < 4:
+            return
         buy(command[1], command[2], command[3])
     elif command[0] == 'COMMIT_BUY':
         print(command[0])
+        if len(command) < 2:
+            return
         commit_buy(command[1])
     elif command[0] == 'CANCEL_BUY':
         print(command[0])
+        if len(command) < 2:
+            return
         cancel_buy(command[1])
     elif command[0] == 'SELL':
         print(command[0])
+        if len(command) < 4:
+            return
         sell(command[1], command[2], command[3]) #userId, symbol, dollaramount
     elif command[0] == 'COMMIT_SELL':
         print(command[0])
+        if len(command) < 2:
+            return
         commit_sell(command[1])
     elif command[0] == 'CANCEL_SELL':
         print(command[0])
+        if len(command) < 2:
+            return
         cancel_sell(command[1])
     elif command[0] == 'SET_BUY_AMOUNT':
         print(command[0])
+        if len(command) < 4:
+            return
         set_buy_ammount(command[1], command[2], command[3])
     elif command[0] == 'CANCEL_SET_BUY':
         print(command[0])
+        if len(command) < 3:
+            return
         cancel_set_buy(command[1], command[2])
     elif command[0] == 'SET_BUY_TRIGGER':
         print(command[0])
+        if len(command) < 4:
+            return
         set_buy_trigger(command[1], command[2], command[3])
     elif command[0] == 'SET_SELL_AMOUNT':
         print(command[0])
+        if len(command) < 4:
+            return
         set_sell_ammount(command[1], command[2], command[3])
     elif command[0] == 'SET_SELL_TRIGGER':
         print(command[0])
+        if len(command) < 4:
+            return
         set_sell_trigger(command[1], command[2], command[3])
     elif command[0] == 'CANCEL_SET_SELL':
         print(command[0])
+        if len(command) < 3:
+            return
         cancel_set_sell(command[1], command[2])
     elif command[0] == 'DUMPLOG':
         print(command[0])
         if len(command) == 3:
             dumplog(command[1], command[2])
-        else:
+        elif len(command) == 2:
             dumplog(filename=command[1])
+        else:
+            return
     elif command[0] == 'DISPLAY_SUMMARY':
         print(command[0])
+        if len(command) < 2:
+            return
         display_summary(command[1])
+    else:
+        return
 	
 
 def transaction_num_generator():
@@ -92,6 +126,7 @@ def transaction_num_generator():
     
 def add(userid, amount):
     transactionNum = transaction_num_generator()
+    
     data = {
         'userId': userid,
         'amount': amount,

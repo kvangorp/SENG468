@@ -11,8 +11,15 @@ class BuyView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "BUY", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find user account
         userAccount = Account.objects.filter(

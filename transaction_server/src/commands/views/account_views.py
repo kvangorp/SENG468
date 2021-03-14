@@ -2,9 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import Account, Stock, Trigger
-from ..transactionsLogger import log_account_transaction
+from ..transactionsLogger import log_account_transaction, log_error_event
 from transactions.models import Transactions
-from time import time
+import time
 import redis, os, json
 from django.conf import settings
 
@@ -15,8 +15,15 @@ class AddView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "ADD", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find or create user account
         account = Account.objects.filter(
@@ -32,6 +39,8 @@ class AddView(APIView):
 
         # Log transaction
         log_account_transaction(transactionNum, 'add', userId, amount)
+
+        # time.sleep(20)
        
         return Response(status=status.HTTP_200_OK)
 
