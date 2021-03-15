@@ -2,10 +2,10 @@ import requests
 from time import time
 from database2xml import XMLgen
 from lxml import etree
+import concurrent.futures
 
 WEBSERVER = 'WS'
-file1 = open('./testfiles/1userWorkLoad.txt', 'r')
-Lines = file1.readlines()
+fileName = './testfiles/1userWorkLoad.txt'
 TRANSACTIONNUM = 0
 
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transactionNum=1):
@@ -21,10 +21,6 @@ def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transact
     }
     logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
     print(logger)
-
-def generateCommand(line):
-    command = line[0]
-    commandSwitch(line)
 
 def commandSwitch(command):
 	#IF COMMAND MATCHES, CALL THE FUNCTION FOR THE COMMAND, WITH THE PARAMETERS 
@@ -351,9 +347,48 @@ def display_summary(userId):
     print(res)
     
 
-for line in Lines:
-    fileLine = line.split(' ')
-    commandLine = fileLine[1]
-    print(fileLine[0])
-    commandSwitch(commandLine.split(','))
+def sortByUser(lines):
+    userCommands = {}
+
+    for line in lines:
+
+        # Parse file line
+        fileLine = line.split(' ')
+        commandLine = fileLine[1]
+        parsedCommand = commandLine.split(',')
+        
+        # Append command to list of user's commands
+        userId = parsedCommand[1]
+        userCommands.setdefault(userId, []).append(parsedCommand)
+
+    return userCommands
+
+def handleUserCommands(user):
+    
+
+
+def main():
+    # Open and read workload file
+    workLoadFile = open(fileName, 'r')
+    lines = workLoadFile.readlines()
+
+    # Sort commands by user
+    commandsByUser = sortByUser(lines[:len(lines)-1])
+    numUsers = len(commandsByUser)
+
+    # Set up a thread for each user
+    with concurrent.futures.ThreadPoolExecutor(max_workers=numUsers) as executor:
+        executor.map(handleUserCommands, commandsByUser.keys())
+
+
+    for command in commandsByUser[user]:
+        commandSwitch(command)
+
+
+
+    
+
+
+if __name__ == "__main__":
+    main()
 
