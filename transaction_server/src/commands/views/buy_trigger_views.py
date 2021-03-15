@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Trigger
-from transactions.models import Transactions
+from ..transactionsLogger import log_account_transaction, log_error_event
 from rest_framework import status
 from time import time
 
@@ -10,30 +10,25 @@ class SetBuyAmountView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "SET_BUY_AMOUNT", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find user account
         userAccount = Account.objects.filter(
             userId=userId,
         ).first()
 
-
         # Check user account balance and decrement balance and increment pending 
         if userAccount.balance < amount:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_BUY_AMOUNT',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have enough money."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_BUY_AMOUNT", userId, "You don't have enough money.")
             return Response("You don't have enough money.", status=status.HTTP_412_PRECONDITION_FAILED)
         else:
             userAccount.pending += amount
@@ -61,16 +56,7 @@ class SetBuyAmountView(APIView):
         trigger.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time()*1000),
-            server='TS',
-            transactionNum=transactionNum,
-            userCommand='remove',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, amount)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -79,8 +65,15 @@ class SetBuyTriggerView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "SET_BUY_TRIGGER", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find trigger
         trigger = Trigger.objects.filter(
@@ -91,18 +84,7 @@ class SetBuyTriggerView(APIView):
 
         if trigger is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_BUY_TRIGGER',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have a trigger."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_BUY_TRIGGER", userId, "You don't have a trigger.")
             return Response("You don't have a trigger ya silly.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         trigger.triggerPoint = amount
@@ -125,20 +107,9 @@ class CancelSetBuyView(APIView):
             isBuy=True
         ).first()
 
-
         if trigger is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='CANCEL_SET_BUY',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                errorEvent="You don't have a trigger."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "CANCEL_SET_BUY", userId, "You don't have a trigger.")
             return Response("You don't a trigger to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         amount = trigger.amount
@@ -153,15 +124,6 @@ class CancelSetBuyView(APIView):
         userAccount.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time()*1000),
-            server='TS',
-            transactionNum=transactionNum,
-            userCommand='add',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'add', userId, amount)
 
         return Response(status=status.HTTP_200_OK)

@@ -1,4 +1,4 @@
-from .utils import get_quote
+from .quoteHandler import get_quote
 from .models import Account, Trigger, Quote, Stock
 import time
 
@@ -16,8 +16,7 @@ def triggerHandler():
                 stockSymbol = stock['stockSymbol']
 
                 # Get quote for stock and cache
-                quoteResponse = get_quote(userId, stockSymbol,isSysEvent=True)
-                quote = quoteResponse.quote
+                quote = get_quote(userId, stockSymbol,isSysEvent=True)
 
                 # Get triggers for the current stock
                 currentTriggers = triggers.filter(

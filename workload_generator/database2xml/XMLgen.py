@@ -81,7 +81,7 @@ def quoteServerGen(input):
     quoteServerTime.text = input['quoteTime']
 
     cryptokey = etree.SubElement(quoteServer, "cryptokey") 
-    cryptokey.text = input['cryptoKey']
+    cryptokey.text = input['cryptokey']
 
     return quoteServer
 
@@ -98,7 +98,7 @@ def userAccountGen(input):
     transactionNum.text = input['transNum']
 
     action = etree.SubElement(accountTransaction, "action") 
-    action.text = input['userCommand']
+    action.text = input['action']
 
     username = etree.SubElement(accountTransaction, "username") 
     username.text = input['user']
@@ -154,12 +154,6 @@ def errorEventGen(input):
 
     username = etree.SubElement(errorEvent, "username") 
     username.text = input['username']
-
-    stockSymbol = etree.SubElement(errorEvent, "stockSymbol") 
-    stockSymbol.text = input['stockSymbol']
-
-    filename = etree.SubElement(errorEvent, "filename") 
-    filename.text = input['filename']
 
     errorMessage = etree.SubElement(errorEvent, "errorMessage") 
     errorMessage.text = input['errorMessage']
@@ -226,15 +220,15 @@ def createDocument(filename, transaction_list):
     log = etree.Element("log")
     for row in transaction_list:
         if row['type'] == 'userCommand':
-            if row['userId'] == '':
+            if row['username'] == '':
                 input = {
                     'timestamp': str(row['timestamp']),
                     'server': row['server'],
                     'transNum': str(row['transactionNum']),
-                    'cmd': row['userCommand'],
+                    'cmd': row['command'],
                     'stock': row['stockSymbol'],
                     'file': filename,
-                    'funds': str(row['amount'])
+                    'funds': str(row['funds'])
                 }
                 eTree = noUserCommandsGen(input)
                 log.append(eTree)
@@ -243,11 +237,11 @@ def createDocument(filename, transaction_list):
                     'timestamp': str(row['timestamp']),
                     'server': row['server'],
                     'transNum': str(row['transactionNum']),
-                    'cmd': row['userCommand'],
-                    'user': row['userId'],
+                    'cmd': row['command'],
+                    'user': row['username'],
                     'stock': row['stockSymbol'],
                     'file': filename,
-                    'funds': str(row['amount'])
+                    'funds': str(row['funds'])
                 }
                 eTree = userCommandsGen(input)
                 log.append(eTree)
@@ -258,9 +252,9 @@ def createDocument(filename, transaction_list):
                 'transNum': str(row['transactionNum']),
                 'price': str(row['price']),
                 'stockSymbol': row['stockSymbol'],
-                'user': row['userId'],
+                'user': row['username'],
                 'quoteTime': str(row['quoteServerTime']),
-                'cryptoKey': row['cryptoKey']
+                'cryptokey': row['cryptokey']
             }
             eTree = quoteServerGen(input)
             log.append(eTree)
@@ -269,9 +263,9 @@ def createDocument(filename, transaction_list):
                 'timestamp': str(row['timestamp']),
                 'server': row['server'],
                 'transNum': str(row['transactionNum']),
-                'userCommand': row['userCommand'],
-                'user': row['userId'],
-                'amount': str(row['amount']),
+                'action': row['action'],
+                'user': row['username'],
+                'amount': str(row['funds']),
             }
             eTree = userAccountGen(input)
             log.append(eTree)
@@ -280,11 +274,11 @@ def createDocument(filename, transaction_list):
                 'timestamp': str(row['timestamp']),
                 'server': row['server'],
                 'transNum': str(row['transactionNum']),
-                'userCommand': row['userCommand'],
-                'user': row['userId'],
+                'userCommand': row['command'],
+                'user': row['username'],
                 'stockSymbol': row['stockSymbol'],
                 'file': filename,
-                'funds': str(row['amount'])
+                'funds': str(row['funds'])
             }
             eTree = systemEventGen(input)
             log.append(eTree)
@@ -293,11 +287,9 @@ def createDocument(filename, transaction_list):
                 'timestamp': str(row['timestamp']),
                 'server': row['server'],
                 'transactionNum': str(row['transactionNum']),
-                'command': row['userCommand'],
-                'username': row['userId'],
-                'stockSymbol': row['stockSymbol'],
-                'filename': filename,
-                'errorMessage': str(row['errorEvent']),
+                'command': row['command'],
+                'username': row['username'],
+                'errorMessage': str(row['errorMessage']),
             }
             eTree = errorEventGen(input)
             log.append(eTree)

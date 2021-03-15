@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Trigger, Stock
-from transactions.models import Transactions
+from ..transactionsLogger import log_account_transaction, log_error_event
 from rest_framework import status
 from time import time
 
@@ -10,8 +10,15 @@ class SetSellAmountView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find stock account
         stockAccount = Stock.objects.filter(
@@ -22,32 +29,10 @@ class SetSellAmountView(APIView):
         # return if user doesn't have any or enough stocks
         if stockAccount is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_SELL_AMOUNT',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have any stock."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "You don't have any stock.")
             return Response("You don't have any stock.", status=status.HTTP_412_PRECONDITION_FAILED)
         if stockAccount.shares < amount:
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_SELL_AMOUNT',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have enough stocks."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "You don't have enough stocks")
             return Response("Nah ah! You don't have enough stocks.", status=status.HTTP_412_PRECONDITION_FAILED)
         
         # set aside stocks for reserved and decrement shares
@@ -76,16 +61,7 @@ class SetSellAmountView(APIView):
         trigger.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time()*1000),
-            server='TS',
-            transactionNum=transactionNum, 
-            userCommand='remove',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, amount)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -94,8 +70,15 @@ class SetSellTriggerView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "SET_SELL_TRIGGER", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find trigger
         trigger = Trigger.objects.filter(
@@ -108,18 +91,7 @@ class SetSellTriggerView(APIView):
         # If trigger doesn't exist, create new; else, update amount
         if trigger is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SET_SELL_TRIGGER',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have any trigger set."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SET_SELL_TRIGGER", userId, "You don't have any trigger set.")
             return Response("You don't have any trigger set.", status=status.HTTP_412_PRECONDITION_FAILED)
         else:
             trigger.triggerPoint = amount
@@ -141,21 +113,11 @@ class CancelSetSellView(APIView):
             isBuy=False
         ).first()
 
-
         if trigger is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='CANCEL_SET_SELL',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                errorEvent="You don't have a trigger to cancel."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "CANCEL_SET_SELL", userId, "You don't have a trigger to cancel.")
             return Response("You don't a trigger to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
+        
         amount = trigger.amount
         trigger.delete()
 
@@ -169,15 +131,6 @@ class CancelSetSellView(APIView):
         stockAccount.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time()*1000),
-            server='TS',
-            transactionNum=transactionNum, 
-            userCommand='add',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'add', userId, amount)
 
         return Response(status=status.HTTP_200_OK)

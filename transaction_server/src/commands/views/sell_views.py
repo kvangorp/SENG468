@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Stock, Quote, PendingSell
-from transactions.models import Transactions
+from ..transactionsLogger import log_account_transaction, log_error_event
 from rest_framework import status
-from ..utils import get_quote
+from ..quoteHandler import get_quote
 from time import time
 
 class SellView(APIView):
@@ -11,8 +11,15 @@ class SellView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        dollarAmount = float(request.data.get("amount"))
+        dollarAmount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            dollarAmount = float(dollarAmount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "SELL", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
 
         # Find stock account
@@ -23,48 +30,24 @@ class SellView(APIView):
 
         if not stockAccount:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SELL',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=dollarAmount,
-                errorEvent="You don't have this stock."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SELL", userId, "You don't have this stock.")
             return Response("You don't have this stock.", status=status.HTTP_412_PRECONDITION_FAILED)
 
-        # TODO: review switching to checking quote cash instead
         # Calculate number of stocks to sell
-        stockQuote = get_quote(id=userId, sym=stockSymbol, transactionNum=transactionNum, isSysEvent=False)
-        stockPrice = stockQuote.quote
+        stockPrice = get_quote(userId, stockSymbol, transactionNum, False)
         shares = dollarAmount/stockPrice
         
         # Check that the user has enough stocks to continue with sell
         if stockAccount.shares < shares:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='SELL',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=dollarAmount,
-                errorEvent="You don't have enough shares."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "SELL", userId, "You don't have enough shares.")
             return Response("You don't have enough shares.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Record pending sell
         pendingSell = PendingSell(
             userId=userId,
             stockSymbol=stockSymbol,
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             dollarAmount=dollarAmount,
             shares=shares
         )
@@ -90,16 +73,7 @@ class CommitSellView(APIView):
 
         if pendingSell is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='COMMIT_SELL',
-                userId=userId,
-                errorEvent="You don't have a sell to commit."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "COMMIT_SELL", userId, "You don't have a sell to commit.")
             return Response("There is no sell to commit.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         stockSymbol = pendingSell.stockSymbol
@@ -119,35 +93,13 @@ class CommitSellView(APIView):
 
         if stockAccount is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='COMMIT_SELL',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=dollarAmount,
-                errorEvent="You don't have an account."
-            )
-            transaction.save()
-            return Response("Account doesn't exist.", status=status.HTTP_412_PRECONDITION_FAILED)
+            log_error_event(transactionNum, "COMMIT_SELL", userId, "You don't have any stock.")
+            return Response("You don't have any stock.", status=status.HTTP_412_PRECONDITION_FAILED)
         
         if stockAccount.shares < shares:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='COMMIT_SELL',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=dollarAmount,
-                errorEvent="You don't have enough stocks."
-            )
-            transaction.save()
-            return Response("You don't have enough stocks to sell.", status=status.HTTP_412_PRECONDITION_FAILED)
+            log_error_event(transactionNum, "COMMIT_SELL", userId, "You don't have enough stocks.")
+            return Response("You don't have enough stocks.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Increment user balance amount
         userAccount.balance += dollarAmount
@@ -156,19 +108,9 @@ class CommitSellView(APIView):
         # Remove stock shares from stock account
         stockAccount.shares -= shares
         stockAccount.save()
-        
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time()*1000),
-            server='TS',
-            transactionNum=transactionNum,
-            userCommand='remove',
-            userId=userId,
-            amount=dollarAmount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, dollarAmount)
 
         # Remove pending sell
         pendingSell.delete()
@@ -192,17 +134,8 @@ class CancelSellView(APIView):
 
         if pendingSell is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='CANCEL_SELL',
-                userId=userId,
-                errorEvent="You don't have a recent sell to cancel."
-            )
-            transaction.save()
-            return Response("There is no recent sell to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
+            log_error_event(transactionNum, "CANCEL_SELL", userId, "You don't have a recent sell to cancel.")
+            return Response("You don't have a recent sell to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Remove pending sell
         pendingSell.delete()

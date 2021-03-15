@@ -11,13 +11,13 @@ TRANSACTIONNUM = 0
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transactionNum=1):
     log = {
         'type': 'userCommand',
-        'timestamp': int(time()*1000),
+        'timestamp': int(time())*1000,
         'server': WEBSERVER,
         'transactionNum': transactionNum,
-        'userCommand': command,
+        'command': command,
+        'username': userid,
         'stockSymbol': stockSymbol,
-        'userId': userid,
-        'amount': amount
+        'funds': amount
     }
     logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
     print(logger)
@@ -33,55 +33,89 @@ def commandSwitch(command):
 
     if command[0] == 'ADD':
         print(command[0])
+        if len(command) < 3:
+            return
         add(command[1], command[2])
     elif command[0] == 'QUOTE': 
         print(command[0])
+        if len(command) < 3:
+            return
         quote(command[1], command[2])
     elif command[0] == 'BUY':
         print(command[0])
+        if len(command) < 4:
+            return
         buy(command[1], command[2], command[3])
     elif command[0] == 'COMMIT_BUY':
         print(command[0])
+        if len(command) < 2:
+            return
         commit_buy(command[1])
     elif command[0] == 'CANCEL_BUY':
         print(command[0])
+        if len(command) < 2:
+            return
         cancel_buy(command[1])
     elif command[0] == 'SELL':
         print(command[0])
+        if len(command) < 4:
+            return
         sell(command[1], command[2], command[3]) #userId, symbol, dollaramount
     elif command[0] == 'COMMIT_SELL':
         print(command[0])
+        if len(command) < 2:
+            return
         commit_sell(command[1])
     elif command[0] == 'CANCEL_SELL':
         print(command[0])
+        if len(command) < 2:
+            return
         cancel_sell(command[1])
     elif command[0] == 'SET_BUY_AMOUNT':
         print(command[0])
+        if len(command) < 4:
+            return
         set_buy_ammount(command[1], command[2], command[3])
     elif command[0] == 'CANCEL_SET_BUY':
         print(command[0])
+        if len(command) < 3:
+            return
         cancel_set_buy(command[1], command[2])
     elif command[0] == 'SET_BUY_TRIGGER':
         print(command[0])
+        if len(command) < 4:
+            return
         set_buy_trigger(command[1], command[2], command[3])
     elif command[0] == 'SET_SELL_AMOUNT':
         print(command[0])
+        if len(command) < 4:
+            return
         set_sell_ammount(command[1], command[2], command[3])
     elif command[0] == 'SET_SELL_TRIGGER':
         print(command[0])
+        if len(command) < 4:
+            return
         set_sell_trigger(command[1], command[2], command[3])
     elif command[0] == 'CANCEL_SET_SELL':
         print(command[0])
+        if len(command) < 3:
+            return
         cancel_set_sell(command[1], command[2])
     elif command[0] == 'DUMPLOG':
         print(command[0])
         if len(command) == 3:
             dumplog(command[1], command[2])
-        else:
+        elif len(command) == 2:
             dumplog(filename=command[1])
+        else:
+            return
     elif command[0] == 'DISPLAY_SUMMARY':
         print(command[0])
+        if len(command) < 2:
+            return
         display_summary(command[1])
+    else:
+        return
 	
 
 def transaction_num_generator():
@@ -92,6 +126,7 @@ def transaction_num_generator():
     
 def add(userid, amount):
     transactionNum = transaction_num_generator()
+    
     data = {
         'userId': userid,
         'amount': amount,
@@ -298,10 +333,10 @@ def dumplog(userid='', filename=''):
             'userId': userid,
             'transactionNum': transactionNum
         }
-        res = requests.get('http://localhost:8080/api/transactions/', params=data)
+        res = requests.post('http://localhost:8080/api/commands/dumplog/', params=data)
     else:
-        res = requests.get('http://localhost:8080/api/transactions/') 
-    
+        res = requests.post('http://localhost:8080/api/commands/dumplog/') 
+    print(res.json())
     XMLgen.createDocument(filename, res.json())
 
 

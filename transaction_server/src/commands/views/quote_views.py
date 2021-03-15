@@ -1,8 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..utils import get_quote
-from transactions.models import Transactions
+from ..quoteHandler import get_quote
 
 class QuoteView(APIView):
     def post(self, request):
@@ -16,7 +15,7 @@ class QuoteView(APIView):
 
         # Return quote
         data = {
-            "quote": quote.quote,
-            "stockSymbol": quote.stockSymbol
+            "quote": quote,
+            "stockSymbol": stockSymbol
         }
         return Response(data, status=status.HTTP_200_OK)

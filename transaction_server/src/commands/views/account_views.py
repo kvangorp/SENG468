@@ -2,16 +2,28 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import Account, Stock, Trigger
+from ..transactionsLogger import log_account_transaction, log_error_event
 from transactions.models import Transactions
-from time import time
+import time
+import redis, os, json
+from django.conf import settings
+
+redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
 class AddView(APIView):
 
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "ADD", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find or create user account
         account = Account.objects.filter(
@@ -26,30 +38,33 @@ class AddView(APIView):
         account.save()
 
         # Log transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time()*1000),
-            server='TS',
-            transactionNum=transactionNum, #TODO
-            userCommand='add',
-            userId=userId,
-            amount=account.balance
-        )
-        transaction.save()
-        
+        log_account_transaction(transactionNum, 'add', userId, amount)
+
+        # time.sleep(20)
+       
         return Response(status=status.HTTP_200_OK)
 
 
 class DumplogView(APIView):
     def post(self, request):
-        print('dumplog')
+        userId = request.data.get("userId")
+        keys_str = redis_instance.keys()
+        values = []
+        keys_int = list(map(int, keys_str))
+        keys_int.sort()
+        for key in keys_int:
+            value_list = redis_instance.smembers(str(key))
+            for value in value_list:
+                print(value)
+                values.append(json.loads(value))
+        print(values)
+        return Response(values, status=status.HTTP_200_OK)
 
 
 class DisplaySummaryView(APIView):
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
-        
 
         # Find user account
         userAccount = Account.objects.filter(
@@ -67,17 +82,17 @@ class DisplaySummaryView(APIView):
         )
 
         # Get transaction history
-        transactions= Transactions.objects.filter(
-            userId=userId
-        )
+        #transactions= Transactions.objects.filter(
+        #    userId=userId
+        #)
 
         # Return user summary
-        data = {
-            "userId": userId,
-            "balance": userAccount.balance,
-            "pending": userAccount.pending,
-            "stocks": stocks.values(),
-            "triggers": triggers.values(),
-            "transactions": transactions.values()
-        }
-        return Response(data, status=status.HTTP_200_OK)
+        #data = {
+        #    "userId": userId,
+        #    "balance": userAccount.balance,
+        #    "pending": userAccount.pending,
+        #    "stocks": stocks.values(),
+        #    "triggers": triggers.values(),
+        #    "transactions": transactions.values()
+        #}
+        return Response(status=status.HTTP_200_OK)

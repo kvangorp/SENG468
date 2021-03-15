@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Account, Stock, Quote, PendingBuy
-from transactions.models import Transactions
+from ..transactionsLogger import log_account_transaction, log_error_event
 from rest_framework import status
-from ..utils import get_quote
+from ..quoteHandler import get_quote
 from time import time
 
 class BuyView(APIView):
@@ -11,8 +11,15 @@ class BuyView(APIView):
         # Get request data
         userId = request.data.get("userId")
         stockSymbol = request.data.get("stockSymbol")
-        amount = float(request.data.get("amount"))
+        amount = request.data.get("amount")
         transactionNum = int(request.data.get("transactionNum"))
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            # Log error event to transaction
+            log_error_event(transactionNum, "BUY", userId, "Invalid parameter type.")
+            return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find user account
         userAccount = Account.objects.filter(
@@ -22,25 +29,14 @@ class BuyView(APIView):
         # Check that the user has enough money to continue with purchase
         if userAccount.balance < amount:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='BUY',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have enough money."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "BUY", userId, "You don't have enough money.")
             return Response("You don't have enough money.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Record the pending buy
         pendingBuy = PendingBuy(
             userId=userId,
             stockSymbol=stockSymbol,
-            timestamp=int(time()*1000),
+            timestamp=int(time())*1000,
             dollarAmount=amount
         )
         pendingBuy.save()
@@ -64,16 +60,7 @@ class CommitBuyView(APIView):
 
         if pendingBuy is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='COMMIT_BUY',
-                userId=userId,
-                errorEvent="You don't have a buy to commit."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "COMMIT_BUY", userId, "You don't have a buy to commit.")
             return Response("There is no buy to commit.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         amount = pendingBuy.dollarAmount
@@ -86,34 +73,12 @@ class CommitBuyView(APIView):
 
         if userAccount is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='COMMIT_BUY',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have a user account."
-            )
-            transaction.save()
-            return Response("Account doesn't exist.", status=status.HTTP_412_PRECONDITION_FAILED)
+            log_error_event(transactionNum, "COMMIT_BUY", userId, "You don't have a user account.")
+            return Response("You don't have a user account.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         if userAccount.balance < amount:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='COMMIT_BUY',
-                userId=userId,
-                stockSymbol=stockSymbol,
-                amount=amount,
-                errorEvent="You don't have enough money."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "COMMIT_BUY", userId, "You don't have enough money.")
             return Response("You don't have enough money.", status=status.HTTP_412_PRECONDITION_FAILED)
 
 
@@ -124,10 +89,8 @@ class CommitBuyView(APIView):
             defaults={'shares':0.0}
         )
 
-        # TODO review switching to checking quote cash instead
         # Calculate number of stocks to buy
-        stockQuote = get_quote(userId,stockSymbol,transactionNum,False)
-        stockPrice = stockQuote.quote
+        stockPrice = get_quote(userId,stockSymbol,transactionNum,False)
         shares = amount/stockPrice
 
         # Decrement user balance amount
@@ -139,16 +102,7 @@ class CommitBuyView(APIView):
         stockAccount.save()
 
         # Log account transaction
-        transaction = Transactions(
-            type="accountTransaction",
-            timestamp=int(time()*1000),
-            server='TS',
-            transactionNum=transactionNum, #TODO
-            userCommand='remove',
-            userId=userId,
-            amount=amount
-        )
-        transaction.save()
+        log_account_transaction(transactionNum, 'remove', userId, amount)
 
         # Remove pending buy
         pendingBuy.delete()
@@ -172,16 +126,7 @@ class CancelBuyView(APIView):
 
         if pendingBuy is None:
             # Log error event to transaction
-            transaction = Transactions(
-                type='errorEvent',
-                timestamp=int(time()*1000),
-                server='TS',
-                transactionNum=transactionNum,
-                userCommand='CANCEL_BUY',
-                userId=userId,
-                errorEvent="You don't have a recent buy to cancel."
-            )
-            transaction.save()
+            log_error_event(transactionNum, "CANCEL_BUY", userId, "You don't have a recent buy to cancel.")
             return Response("There is no recent buy to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Delete pending buy
