@@ -31,7 +31,7 @@ def triggerHandler():
                     elif not trigger.isBuy and quote >= trigger.triggerPoint:
                         processSell(trigger, quote)
 
-        time.sleep(5)
+        time.sleep(30)
 
 def processBuy(trigger, quote):
     # Get data
