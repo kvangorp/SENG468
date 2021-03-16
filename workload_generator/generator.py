@@ -20,7 +20,7 @@ def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transact
         'funds': amount
     }
     logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
-    print(logger)
+    print("Logger: ",logger)
 
 def commandSwitch(command):
 	#IF COMMAND MATCHES, CALL THE FUNCTION FOR THE COMMAND, WITH THE PARAMETERS 
@@ -131,7 +131,7 @@ def add(userid, amount):
     user_command_log(userid, amount, 'ADD', transactionNum=transactionNum)
     
     res = requests.post('http://localhost:8080/api/commands/add/', json=data)
-    print(res)
+    print("ADD ", res)
    
 
 def quote(userid, stock):
@@ -145,7 +145,7 @@ def quote(userid, stock):
     user_command_log(userid, 0, 'QUOTE', stock, transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8080/api/commands/quote/', json=data)
-    print(res)
+    print("QUOTE ",res)
    
 
 def buy(userid, stock, dollar_amount):
@@ -160,7 +160,7 @@ def buy(userid, stock, dollar_amount):
     user_command_log(userid, dollar_amount, 'BUY', stock, transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8080/api/commands/buy/', json=data)
-    print(res)
+    print("BUY", res)
     
 
 #TODO: add status field to buy commands: pending, commited, cancelled
@@ -174,7 +174,7 @@ def commit_buy(userid):
     user_command_log(userid, 0.0, 'COMMIT_BUY', '', transactionNum=transactionNum) 
 
     res = requests.post('http://localhost:8080/api/commands/commit_buy/', json=data)
-    print(res)
+    print("COMMIT BUY ",res)
    
 
 def cancel_buy(userid):
@@ -187,7 +187,7 @@ def cancel_buy(userid):
     user_command_log(userid=userid, command='CANCEL_BUY',transactionNum=transactionNum) 
 
     res = requests.post('http://localhost:8080/api/commands/cancel_buy/', json=data)
-    print(res)
+    print("CANCEL BUY", res)
     
 
 def sell(userid, stock, dollar_amount):
@@ -203,7 +203,7 @@ def sell(userid, stock, dollar_amount):
     user_command_log(userid, dollar_amount, 'SELL', stock, transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8080/api/commands/sell/', json=data)
-    print(res)
+    print("SELL", res)
    
 
 def commit_sell(userid):
@@ -216,7 +216,7 @@ def commit_sell(userid):
     user_command_log(userid, 0.0, 'COMMIT_SELL', '', transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8080/api/commands/commit_sell/', json=data)
-    print(res)
+    print("COMMIT SELL", res)
  
 
 def cancel_sell(userid):
@@ -229,7 +229,7 @@ def cancel_sell(userid):
     user_command_log(userid=userid, command='CANCEL_SELL', transactionNum=transactionNum)
 
     res = requests.post('http://localhost:8080/api/commands/cancel_sell/', json=data)
-    print(res)
+    print("CANCEL SELL", res)
      
 
 def set_buy_ammount(userId, stockSymbol, dollar_amount):
@@ -244,7 +244,7 @@ def set_buy_ammount(userId, stockSymbol, dollar_amount):
     user_command_log(userid=userId, command='SET_BUY_AMOUNT', amount=dollar_amount, transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8080/api/commands/set_buy_amount/', json=data)
-    print(res)
+    print("SET BUY AMOUNT", res)
     
 
 def cancel_set_buy(userId, stockSymbol):
@@ -258,7 +258,7 @@ def cancel_set_buy(userId, stockSymbol):
     user_command_log(userid=userId, command='CANCEL_SET_BUY',transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8080/api/commands/cancel_set_buy/', json=data)
-    print(res)
+    print("CANCEL SET BUY", res)
     
 
 def set_buy_trigger(userId, stockSymbol, dollar_amount):
@@ -273,7 +273,7 @@ def set_buy_trigger(userId, stockSymbol, dollar_amount):
     user_command_log(userid=userId, command='SET_BUY_TRIGGER', amount=dollar_amount, transactionNum=transactionNum)
     
     res = requests.post(f'http://localhost:8080/api/commands/set_buy_trigger/', json=data)
-    print(res)
+    print("SET BUY TRIGGER",res)
    
 
 def set_sell_ammount(userId, stockSymbol, stock_amount):
@@ -288,7 +288,7 @@ def set_sell_ammount(userId, stockSymbol, stock_amount):
     user_command_log(userid=userId, command='SET_SELL_AMOUNT', amount=stock_amount, transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8080/api/commands/set_sell_amount/', json=data)
-    print(res)
+    print("SET SELL AMOUNT", res)
     
 
 def set_sell_trigger(userId, stockSymbol, dollar_amount):
@@ -303,7 +303,7 @@ def set_sell_trigger(userId, stockSymbol, dollar_amount):
     user_command_log(userid=userId, command='SET_SELL_TRIGGER', amount=dollar_amount, transactionNum=transactionNum)
 
     res = requests.post(f'http://localhost:8080/api/commands/set_sell_trigger/', json=data)
-    print(res)
+    print("SET SELL TRIGGER", res)
    
 
 def cancel_set_sell(userId, stockSymbol):
@@ -317,7 +317,7 @@ def cancel_set_sell(userId, stockSymbol):
     user_command_log(userid=userId, command='CANCEL_SET_SELL',transactionNum=transactionNum)
     
     res = requests.post(f'http://localhost:8080/api/commands/cancel_set_sell/', json=data)
-    print(res)
+    print("CANCEL SET SELL",res)
     
 
 def dumplog(userid='', filename=''):
@@ -344,18 +344,16 @@ def display_summary(userId):
     
     user_command_log(userid=userId, command='DISPLAY_SUMMARY', transactionNum=transactionNum)
     res = requests.post(f'http://localhost:8080/api/commands/display_summary/', json=data)
-    print(res)
+    print("DISPLAY SUMMARY ",res)
     
 
 def sortByUser(lines):
+    print("Sorting commands by user...")
     userCommands = {}
 
     for line in lines:
-
         # Parse file line
-        fileLine = line.split(' ')
-        commandLine = fileLine[1]
-        parsedCommand = commandLine.split(',')
+        parsedCommand = parseLine(line)
         
         # Append command to list of user's commands
         userId = parsedCommand[1]
@@ -363,8 +361,15 @@ def sortByUser(lines):
 
     return userCommands
 
-def handleUserCommands(user):
-    
+def parseLine(line):
+    fileLine = line.split(' ')
+    commandLine = fileLine[1]
+    parsedCommand = commandLine.split(',')
+    return parsedCommand
+
+def handleUserCommands(commands):
+    for command in commands:
+        commandSwitch(command)
 
 
 def main():
@@ -372,21 +377,21 @@ def main():
     workLoadFile = open(fileName, 'r')
     lines = workLoadFile.readlines()
 
+    commandLines = lines[:len(lines)-1]
+    dumplogLine = lines[len(lines)-1]
+
     # Sort commands by user
-    commandsByUser = sortByUser(lines[:len(lines)-1])
+    commandsByUser = sortByUser(commandLines)
     numUsers = len(commandsByUser)
 
     # Set up a thread for each user
     with concurrent.futures.ThreadPoolExecutor(max_workers=numUsers) as executor:
-        executor.map(handleUserCommands, commandsByUser.keys())
+        executor.map(handleUserCommands, commandsByUser.values())
 
+    # Run dumplog
+    dumplogCommand = parseLine(dumplogLine)
+    commandSwitch(dumplogCommand)
 
-    for command in commandsByUser[user]:
-        commandSwitch(command)
-
-
-
-    
 
 
 if __name__ == "__main__":
