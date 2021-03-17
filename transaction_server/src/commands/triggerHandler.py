@@ -40,9 +40,10 @@ def processBuy(trigger, quote):
     amount = trigger.amount
 
     # Find user account
-    userAccount = Account.objects.filter(
-        userId=userId,
-    ).first()
+    try:
+        userAccount = Account.objects.get(userId=userId)
+    except Account.DoesNotExist:
+        return
 
     # Find stock account
     stockAccount, created = Stock.objects.get_or_create(
@@ -71,9 +72,11 @@ def processSell(trigger, quote):
     shareAmount = trigger.amount
 
     # Find user account
-    userAccount = Account.objects.filter(
-        userId=userId,
-    ).first()
+    try:
+        userAccount = Account.objects.get(userId=userId)
+    except Account.DoesNotExist:
+        return
+
 
     # Find stock account
     stockAccount, created = Stock.objects.get_or_create(

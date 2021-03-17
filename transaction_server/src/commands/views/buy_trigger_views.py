@@ -21,9 +21,11 @@ class SetBuyAmountView(APIView):
             return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find user account
-        userAccount = Account.objects.filter(
-            userId=userId,
-        ).first()
+        try:
+            userAccount = Account.objects.get(userId=userId)
+        except Account.DoesNotExist:
+            log_error_event(transactionNum, "SET_BUY_AMOUNT", userId, "Account does not exist.")
+            return Response("Account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Check user account balance and decrement balance and increment pending 
         if userAccount.balance < amount:
@@ -36,14 +38,9 @@ class SetBuyAmountView(APIView):
         userAccount.save()
 
         # Find trigger
-        trigger = Trigger.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol,
-            isBuy=True
-        ).first()
-
-        # If trigger doesn't exist, create new; else, update amount
-        if trigger is None:
+        try:
+            trigger = Trigger.objects.get(userId=userId, stockSymbol=stockSymbol, isBuy=True)
+        except Trigger.DoesNotExist:
             # Create trigger
             trigger = Trigger(
                 userId = userId,
@@ -51,8 +48,8 @@ class SetBuyAmountView(APIView):
                 amount = amount,
                 isBuy = True,
             )
-        else:
-            trigger.amount = amount
+        # Update amount
+        trigger.amount = amount
         trigger.save()
 
         # Log account transaction
@@ -76,13 +73,9 @@ class SetBuyTriggerView(APIView):
             return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find trigger
-        trigger = Trigger.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol,
-            isBuy=True
-        ).first()
-
-        if trigger is None:
+        try:
+            trigger = Trigger.objects.get(userId=userId, stockSymbol=stockSymbol, isBuy=True)
+        except Trigger.DoesNotExist:
             # Log error event to transaction
             log_error_event(transactionNum, "SET_BUY_TRIGGER", userId, "You don't have a trigger.")
             return Response("You don't have a trigger ya silly.", status=status.HTTP_412_PRECONDITION_FAILED)
@@ -101,13 +94,9 @@ class CancelSetBuyView(APIView):
         transactionNum = int(request.data.get("transactionNum"))
 
         # Find and delete trigger
-        trigger = Trigger.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol,
-            isBuy=True
-        ).first()
-
-        if trigger is None:
+        try:
+            trigger = Trigger.objects.get(userId=userId, stockSymbol=stockSymbol, isBuy=True)
+        except Trigger.DoesNotExist:
             # Log error event to transaction
             log_error_event(transactionNum, "CANCEL_SET_BUY", userId, "You don't have a trigger.")
             return Response("You don't a trigger to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
@@ -116,9 +105,12 @@ class CancelSetBuyView(APIView):
         trigger.delete()
 
         # Find user account and increment balance and decrement pending
-        userAccount = Account.objects.filter(
-            userId=userId,
-        ).first()
+        try:
+            userAccount = Account.objects.get(userId=userId)
+        except Account.DoesNotExist:
+            log_error_event(transactionNum, "CANCEL_SET_BUY", userId, "Account does not exist.")
+            return Response("Account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
+
         userAccount.balance += amount
         userAccount.pending -= amount
         userAccount.save()

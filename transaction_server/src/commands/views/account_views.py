@@ -26,11 +26,9 @@ class AddView(APIView):
             return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find or create user account
-        account = Account.objects.filter(
-            userId=userId,
-        ).first()
-
-        if account is None:
+        try:
+            account = Account.objects.get(userId=userId)
+        except Account.DoesNotExist:
             account = Account(userId=userId)
 
         # Add money to account
@@ -55,9 +53,7 @@ class DumplogView(APIView):
         for key in keys_int:
             value_list = redis_instance.smembers(str(key))
             for value in value_list:
-                print(value)
                 values.append(json.loads(value))
-        print(values)
         return Response(values, status=status.HTTP_200_OK)
 
 
@@ -67,32 +63,27 @@ class DisplaySummaryView(APIView):
         userId = request.data.get("userId")
 
         # Find user account
-        userAccount = Account.objects.filter(
-            userId=userId,
-        ).first()
+        try:
+            userAccount = Account.objects.get(userId=userId)
+        except Account.DoesNotExist:
+            return Response("Account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find stock accounts
-        stocks = Stock.objects.filter(
-            userId=userId
-        )
+        stocks = Stock.objects.filter(userId=userId)
 
         # Find triggers
-        triggers = Trigger.objects.filter(
-            userId=userId
-        )
+        triggers = Trigger.objects.filter(userId=userId)
 
         # Get transaction history
-        #transactions= Transactions.objects.filter(
-        #    userId=userId
-        #)
+        #transactions= Transactions.objects.filter(userId=userId)
 
         # Return user summary
-        #data = {
-        #    "userId": userId,
-        #    "balance": userAccount.balance,
-        #    "pending": userAccount.pending,
-        #    "stocks": stocks.values(),
-        #    "triggers": triggers.values(),
+        data = {
+           "userId": userId,
+           "balance": userAccount.balance,
+           "pending": userAccount.pending,
+           "stocks": {} if not stocks else stocks.values(),
+           "triggers": {} if not triggers else triggers.values(),
         #    "transactions": transactions.values()
-        #}
-        return Response(status=status.HTTP_200_OK)
+        }
+        return Response(data,status=status.HTTP_200_OK)
