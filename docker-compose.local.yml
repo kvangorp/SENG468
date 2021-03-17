@@ -25,7 +25,7 @@ services:
   server:
     container_name: transaction_server
     build: ./transaction_server
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn manage.py transaction_server.wsgi 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
