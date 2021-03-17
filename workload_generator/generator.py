@@ -20,6 +20,18 @@ def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transact
     }
     logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
 
+def error_command_log(userid='', command='', transactionNum=1):
+    log = {
+        "type": "errorEvent",
+        "timestamp": int(time()*1000),
+        "server":'TS',
+        "transactionNum": transactionNum,
+        "command": command,
+        "username": userid,
+        "errorMessage": "Invalid number of parameters."
+    }
+    logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
+
 def commandSwitch(command):
 	#IF COMMAND MATCHES, CALL THE FUNCTION FOR THE COMMAND, WITH THE PARAMETERS 
 	#AS SHOWN AT https://www.ece.uvic.ca/~seng468/ProjectWebSite/Commands.html
@@ -28,71 +40,99 @@ def commandSwitch(command):
 
     if command[1] == 'ADD':
         if len(command) < 4:
+            user_command_log(userid=command[2], command='ADD', transactionNum=command[0])
+            error_command_log(userid=command[2], command='ADD', transactionNum=command[0])
             return
         add(command[0], command[2], command[3])
 
     elif command[1] == 'QUOTE': 
         if len(command) < 4:
+            user_command_log(userid=command[2], command='QUOTE', transactionNum=command[0])
+            error_command_log(userid=command[2], command='QUOTE', transactionNum=command[0])
             return
         quote(command[0], command[2], command[3])
 
     elif command[1] == 'BUY':
         if len(command) < 5:
+            user_command_log(userid=command[2], command='BUY', transactionNum=command[0])
+            error_command_log(userid=command[2], command='BUY', transactionNum=command[0])
             return
         buy(command[0], command[2], command[3], command[4])
 
     elif command[1] == 'COMMIT_BUY':
         if len(command) < 3:
+            user_command_log(userid=command[2], command='COMMIT_BUY', transactionNum=command[0])
+            error_command_log(userid=command[2], command='COMMIT_BUY', transactionNum=command[0])
             return
         commit_buy(command[0], command[2])
 
     elif command[1] == 'CANCEL_BUY':
         if len(command) < 3:
+            user_command_log(userid=command[2], command='CANCEL_BUY', transactionNum=command[0])
+            error_command_log(userid=command[2], command='CANCEL_BUY', transactionNum=command[0])
             return
         cancel_buy(command[0], command[2])
 
     elif command[1] == 'SELL':
         if len(command) < 5:
+            user_command_log(userid=command[2], command='SELL', transactionNum=command[0])
+            error_command_log(userid=command[2], command='SELL', transactionNum=command[0])
             return
         sell(command[0], command[2], command[3], command[4])
 
     elif command[1] == 'COMMIT_SELL':
         if len(command) < 3:
+            user_command_log(userid=command[2], command='COMMIT_SELL', transactionNum=command[0])
+            error_command_log(userid=command[2], command='COMMIT_SELL', transactionNum=command[0])
             return
         commit_sell(command[0], command[2])
 
     elif command[1] == 'CANCEL_SELL':
         if len(command) < 3:
+            user_command_log(userid=command[2], command='CANCEL_SELL', transactionNum=command[0])
+            error_command_log(userid=command[2], command='CANCEL_SELL', transactionNum=command[0])
             return
         cancel_sell(command[0], command[2])
 
     elif command[1] == 'SET_BUY_AMOUNT':
         if len(command) < 5:
+            user_command_log(userid=command[2], command='SET_BUY_AMOUNT', transactionNum=command[0])
+            error_command_log(userid=command[2], command='SET_BUY_AMOUNT', transactionNum=command[0])
             return
         set_buy_ammount(command[0], command[2], command[3], command[4])
 
     elif command[1] == 'CANCEL_SET_BUY':
         if len(command) < 4:
+            user_command_log(userid=command[2], command='CANCEL_SET_BUY', transactionNum=command[0])
+            error_command_log(userid=command[2], command='CANCEL_SET_BUY', transactionNum=command[0])
             return
         cancel_set_buy(command[0], command[2], command[3])
 
     elif command[1] == 'SET_BUY_TRIGGER':
         if len(command) < 5:
+            user_command_log(userid=command[2], command='SET_BUY_TRIGGER', transactionNum=command[0])
+            error_command_log(userid=command[2], command='SET_BUY_TRIGGER', transactionNum=command[0])
             return
         set_buy_trigger(command[0], command[2], command[3], command[4])
 
     elif command[1] == 'SET_SELL_AMOUNT':
         if len(command) < 5:
+            user_command_log(userid=command[2], command='SET_SELL_AMOUNT', transactionNum=command[0])
+            error_command_log(userid=command[2], command='SET_SELL_AMOUNT', transactionNum=command[0])
             return
         set_sell_ammount(command[0], command[2], command[3], command[4])
 
     elif command[1] == 'SET_SELL_TRIGGER':
         if len(command) < 5:
+            user_command_log(userid=command[2], command='SET_SELL_TRIGGER', transactionNum=command[0])
+            error_command_log(userid=command[2], command='SET_SELL_TRIGGER', transactionNum=command[0])
             return
         set_sell_trigger(command[0], command[2], command[3], command[4])
 
     elif command[1] == 'CANCEL_SET_SELL':
         if len(command) < 4:
+            user_command_log(userid=command[2], command='CANCEL_SET_SELL', transactionNum=command[0])
+            error_command_log(userid=command[2], command='CANCEL_SET_SELL', transactionNum=command[0])
             return
         cancel_set_sell(command[0], command[2], command[3])
 
@@ -102,10 +142,14 @@ def commandSwitch(command):
         elif len(command) == 3:
             dumplog(transactionNum=command[0], filename=command[2])
         else:
+            user_command_log(userid=command[2], command='DUMPLOG', transactionNum=command[0])
+            error_command_log(userid=command[2], command='DUMPLOG', transactionNum=command[0])
             return
         
     elif command[1] == 'DISPLAY_SUMMARY':
         if len(command) < 3:
+            user_command_log(userid=command[2], command='DISPLAY_SUMMARY', transactionNum=command[0])
+            error_command_log(userid=command[2], command='DISPLAY_SUMMARY', transactionNum=command[0])
             return
         display_summary(command[0], command[2])
 
