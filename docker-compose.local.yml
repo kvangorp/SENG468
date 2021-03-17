@@ -25,7 +25,7 @@ services:
   server:
     container_name: transaction_server
     build: ./transaction_server
-    command: gunicorn manage.py transaction_server.wsgi 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -43,7 +43,7 @@ services:
   server2:
     container_name: transaction_server2
     build: ./transaction_server
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -61,7 +61,7 @@ services:
   server3:
     container_name: transaction_server3
     build: ./transaction_server
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -79,7 +79,7 @@ services:
   server4:
     container_name: transaction_server4
     build: ./transaction_server
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -97,7 +97,7 @@ services:
   server5:
     container_name: transaction_server5
     build: ./transaction_server
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
