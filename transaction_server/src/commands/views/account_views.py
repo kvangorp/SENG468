@@ -4,10 +4,13 @@ from rest_framework import status
 from ..models import Account, Stock, Trigger
 from ..transactionsLogger import log_account_transaction, log_error_event
 from transactions.models import Transactions
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 import time
 import redis, os, json
 from django.conf import settings
 
+CACHE_TTL = getattr(settings, 'CACHE_TTL')
 redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
 class AddView(APIView):
@@ -44,6 +47,8 @@ class AddView(APIView):
 
 
 class DumplogView(APIView):
+
+    @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
         userId = request.data.get("userId")
         keys_str = redis_instance.keys()
@@ -54,10 +59,16 @@ class DumplogView(APIView):
             value_list = redis_instance.smembers(str(key))
             for value in value_list:
                 values.append(json.loads(value))
+
+        if userId:
+            values = [value for value in values if value['username'] == userId]
+        
         return Response(values, status=status.HTTP_200_OK)
 
 
 class DisplaySummaryView(APIView):
+
+    @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")

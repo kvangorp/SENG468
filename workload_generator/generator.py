@@ -349,7 +349,7 @@ def dumplog(transactionNum=0, userid='', filename=''):
             'userId': userid,
             'transactionNum': transactionNum
         }
-        res = requests.post('http://localhost:8080/api/commands/dumplog/', params=data)
+        res = requests.post('http://localhost:8080/api/commands/dumplog/', json=data)
     else:
         res = requests.post('http://localhost:8080/api/commands/dumplog/') 
     print(res.json())
