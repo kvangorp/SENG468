@@ -22,9 +22,11 @@ class BuyView(APIView):
             return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find user account
-        userAccount = Account.objects.filter(
-            userId=userId,
-        ).first()
+        try:
+            userAccount = Account.objects.get(userId=userId)
+        except Account.DoesNotExist:
+            log_error_event(transactionNum, "BUY", userId, "Account does not exist.")
+            return Response("Account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Check that the user has enough money to continue with purchase
         if userAccount.balance < amount:
@@ -67,14 +69,11 @@ class CommitBuyView(APIView):
         stockSymbol = pendingBuy.stockSymbol
 
         # Find user account
-        userAccount = Account.objects.filter(
-            userId=userId,
-        ).first()
-
-        if userAccount is None:
-            # Log error event to transaction
-            log_error_event(transactionNum, "COMMIT_BUY", userId, "You don't have a user account.")
-            return Response("You don't have a user account.", status=status.HTTP_412_PRECONDITION_FAILED)
+        try:
+            userAccount = Account.objects.get(userId=userId)
+        except Account.DoesNotExist:
+            log_error_event(transactionNum, "COMMIT_BUY", userId, "Account does not exist.")
+            return Response("Account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         if userAccount.balance < amount:
             # Log error event to transaction

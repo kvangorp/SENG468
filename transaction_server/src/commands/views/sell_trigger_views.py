@@ -21,16 +21,12 @@ class SetSellAmountView(APIView):
             return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find stock account
-        stockAccount = Stock.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol
-        ).first()
+        try:
+            stockAccount = Stock.objects.get(userId=userId, stockSymbol=stockSymbol)
+        except Stock.DoesNotExist:
+            log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "Stock account does not exist.")
+            return Response("Stock account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
 
-        # return if user doesn't have any or enough stocks
-        if stockAccount is None:
-            # Log error event to transaction
-            log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "You don't have any stock.")
-            return Response("You don't have any stock.", status=status.HTTP_412_PRECONDITION_FAILED)
         if stockAccount.shares < amount:
             log_error_event(transactionNum, "SET_SELL_AMOUNT", userId, "You don't have enough stocks")
             return Response("Nah ah! You don't have enough stocks.", status=status.HTTP_412_PRECONDITION_FAILED)
@@ -41,14 +37,9 @@ class SetSellAmountView(APIView):
         stockAccount.save()
 
         # Find trigger
-        trigger = Trigger.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol,
-            isBuy=False
-        ).first()
-
-        # If trigger doesn't exist, create new; else, update amount
-        if trigger is None:
+        try:
+            trigger = Trigger.objects.get(userId=userId, stockSymbol=stockSymbol, isBuy=False)
+        except Trigger.DoesNotExist:
             # Create trigger
             trigger = Trigger(
                 userId = userId,
@@ -56,8 +47,7 @@ class SetSellAmountView(APIView):
                 amount = amount,        #if buy, amount is dollar amount; if sell, amount is stock amount
                 isBuy = False,
             )
-        else:
-            trigger.amount = amount
+        trigger.amount = amount
         trigger.save()
 
         # Log account transaction
@@ -81,20 +71,13 @@ class SetSellTriggerView(APIView):
             return Response("Invalid parameter type.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find trigger
-        trigger = Trigger.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol,
-            isBuy=False
-        ).first()
-
-
-        # If trigger doesn't exist, create new; else, update amount
-        if trigger is None:
+        try:
+            trigger = Trigger.objects.get(userId=userId, stockSymbol=stockSymbol, isBuy=False)
+        except Trigger.DoesNotExist:
             # Log error event to transaction
             log_error_event(transactionNum, "SET_SELL_TRIGGER", userId, "You don't have any trigger set.")
             return Response("You don't have any trigger set.", status=status.HTTP_412_PRECONDITION_FAILED)
-        else:
-            trigger.triggerPoint = amount
+        trigger.triggerPoint = amount
         trigger.save()
 
         return Response(status=status.HTTP_200_OK)
@@ -107,25 +90,24 @@ class CancelSetSellView(APIView):
         transactionNum = int(request.data.get("transactionNum"))
 
         # Find and delete trigger
-        trigger = Trigger.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol,
-            isBuy=False
-        ).first()
-
-        if trigger is None:
+        try:
+            trigger = Trigger.objects.get(userId=userId, stockSymbol=stockSymbol, isBuy=False)
+        except Trigger.DoesNotExist:
             # Log error event to transaction
             log_error_event(transactionNum, "CANCEL_SET_SELL", userId, "You don't have a trigger to cancel.")
             return Response("You don't a trigger to cancel.", status=status.HTTP_412_PRECONDITION_FAILED)
-        
-        amount = trigger.amount
-        trigger.delete()
+
 
         # Find stock account and increment shares and decrement reserved
-        stockAccount = Stock.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol,
-        ).first()
+        try:
+            stockAccount = Stock.objects.get(userId=userId,stockSymbol=stockSymbol)
+        except Stock.DoesNotExist:
+            log_error_event(transactionNum, "CANCEL_SET_SELL", userId, "Stock account does not exist.")
+            return Response("Stock account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
+                
+        amount = trigger.amount
+        trigger.delete()
+        
         stockAccount.shares += amount
         stockAccount.reserved -= amount
         stockAccount.save()

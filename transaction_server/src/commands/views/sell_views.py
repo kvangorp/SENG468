@@ -23,12 +23,9 @@ class SellView(APIView):
 
 
         # Find stock account
-        stockAccount = Stock.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol
-        ).first()
-
-        if not stockAccount:
+        try:
+            stockAccount = Stock.objects.get(userId=userId, stockSymbol=stockSymbol)
+        except Stock.DoesNotExist:
             # Log error event to transaction
             log_error_event(transactionNum, "SELL", userId, "You don't have this stock.")
             return Response("You don't have this stock.", status=status.HTTP_412_PRECONDITION_FAILED)
@@ -81,17 +78,16 @@ class CommitSellView(APIView):
         shares = pendingSell.shares
 
         # Find user account
-        userAccount = Account.objects.filter(
-            userId=userId,
-        ).first()
+        try:
+            userAccount = Account.objects.get(userId=userId)
+        except Account.DoesNotExist:
+            log_error_event(transactionNum, "COMMIT_SELL", userId, "Account does not exist.")
+            return Response("Account does not exist.", status=status.HTTP_412_PRECONDITION_FAILED)
 
         # Find stock account
-        stockAccount = Stock.objects.filter(
-            userId=userId,
-            stockSymbol=stockSymbol
-        ).first()
-
-        if stockAccount is None:
+        try:
+            stockAccount = Stock.objects.get(userId=userId, stockSymbol=stockSymbol)
+        except Stock.DoesNotExist:
             # Log error event to transaction
             log_error_event(transactionNum, "COMMIT_SELL", userId, "You don't have any stock.")
             return Response("You don't have any stock.", status=status.HTTP_412_PRECONDITION_FAILED)
