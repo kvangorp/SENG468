@@ -5,7 +5,8 @@ from lxml import etree
 import concurrent.futures
 
 WEBSERVER = 'WS'
-fileName = './testfiles/1userWorkLoad.txt'
+TRANSACTIONSERVER = 'TS'
+fileName = './testfiles/1000userWorkLoad.txt'
 
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transactionNum=1):
     log = {
@@ -24,7 +25,7 @@ def error_command_log(userid='', command='', transactionNum=1):
     log = {
         "type": "errorEvent",
         "timestamp": int(time()*1000),
-        "server":'TS',
+        "server": TRANSACTIONSERVER,
         "transactionNum": transactionNum,
         "command": command,
         "username": userid,

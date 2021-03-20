@@ -1,7 +1,22 @@
 from rest_framework import serializers
-from .models import Transactions
+from .models import AccountTransaction, UserCommand, ErrorEvent, QuoteServerTransaction
 
-class TransactionSerializer(serializers.ModelSerializer):
+class AccountTransactionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Transactions
+        model = AccountTransaction
+        fields = '__all__'
+
+class UserCommandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserCommand
+        fields = '__all__'
+
+class ErrorEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ErrorEvent
+        fields = '__all__'
+
+class QuoteServerTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuoteServerTransaction
         fields = '__all__'

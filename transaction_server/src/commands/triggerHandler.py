@@ -1,5 +1,5 @@
 from .quoteHandler import get_quote
-from .models import Account, Trigger, Quote, Stock
+from .models import Account, Trigger, Stock
 import time
 
 def triggerHandler():

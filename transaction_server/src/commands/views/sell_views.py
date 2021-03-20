@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from ..models import Account, Stock, Quote, PendingSell
+from ..models import Account, Stock, PendingSell
 from ..transactionsLogger import log_account_transaction, log_error_event
 from rest_framework import status
 from ..quoteHandler import get_quote
