@@ -5,7 +5,7 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import UserCommand
+from .models import UserCommand, ErrorEvent
 
 class TransactionView(APIView):
     def post(self, request):
@@ -23,7 +23,7 @@ class TransactionView(APIView):
             )
             transaction.save()
         elif type == "errorEvent":
-            transaction = UserCommand(
+            transaction = ErrorEvent(
                 type = type,
                 timestamp = request.data.get("timestamp"),
                 server = request.data.get("server"),
