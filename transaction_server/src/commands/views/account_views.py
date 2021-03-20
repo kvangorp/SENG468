@@ -3,15 +3,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from ..models import Account, Stock, Trigger
 from ..transactionsLogger import log_account_transaction, log_error_event
-from transactions.models import Transactions
+from transactions.models import UserCommand, QuoteServerTransaction, ErrorEvent, AccountTransaction
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 import time
 import redis, os, json
 from django.conf import settings
+from transactions.serializers import AccountTransactionSerializer, UserCommandSerializer, ErrorEventSerializer, QuoteServerTransactionSerializer
+from django.core import serializers
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL')
-redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
 class AddView(APIView):
 
@@ -51,19 +52,22 @@ class DumplogView(APIView):
     @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
         userId = request.data.get("userId")
-        keys_str = redis_instance.keys()
-        values = []
-        keys_int = list(map(int, keys_str))
-        keys_int.sort()
-        for key in keys_int:
-            value_list = redis_instance.smembers(str(key))
-            for value in value_list:
-                values.append(json.loads(value))
-
-        if userId:
-            values = [value for value in values if value['username'] == userId]
+        if not userId:
+            userCommands = UserCommandSerializer(UserCommand.objects.all(), many=True)
+            accountTransactions = AccountTransactionSerializer(AccountTransaction.objects.all(), many=True)
+            quoteServerTransactions = QuoteServerTransactionSerializer(QuoteServerTransaction.objects.all(), many=True)
+            errorEvents = ErrorEventSerializer(ErrorEvent.objects.all(), many=True)
+        else:
+            userCommands = UserCommandSerializer(UserCommand.objects.filter(username=userId), many=True)
+            accountTransactions = AccountTransactionSerializer(AccountTransaction.objects.filter(username=userId), many=True)
+            quoteServerTransactions = QuoteServerTransactionSerializer(QuoteServerTransaction.objects.filter(username=userId), many=True)
+            errorEvents = ErrorEventSerializer(ErrorEvent.objects.filter(username=userId), many=True)
         
-        return Response(values, status=status.HTTP_200_OK)
+        all_transactions = userCommands.data + accountTransactions.data + \
+            quoteServerTransactions.data + errorEvents.data
+        all_transactions.sort(key=lambda transaction: transaction['transactionNum'])
+
+        return Response(all_transactions, status=status.HTTP_200_OK)
 
 
 class DisplaySummaryView(APIView):
