@@ -381,13 +381,17 @@ def sortByUser(lines):
 
 def parseLine(line):
     # Parse command
-    fileLine = line.split(' ')
+    fileLine = line.strip().split(' ')
     commandLine = fileLine[1]
     parsedCommand = commandLine.split(',')
 
     # Add transaction number to command
     transactionNum = fileLine[0].strip("[]")
     parsedCommand.insert(0, transactionNum)
+
+    # Make sure none of command elements are null
+    parsedCommand = [element for element in parsedCommand if (element and element != ' ')]
+
     return parsedCommand
 
 def handleUserCommands(commands):
