@@ -11,7 +11,7 @@ from requests.packages.urllib3.util.retry import Retry
 #logging.basicConfig(level=logging.DEBUG)
 
 s = requests.Session()
-retries = Retry(total=5, allowed_methods={'GET', 'POST'}, backoff_factor=1, status_forcelist=[ 500, 502, 504 ])
+retries = Retry(total=5, allowed_methods=frozenset({'GET', 'POST'}), backoff_factor=1, status_forcelist=[ 500, 502, 504 ])
 s.mount('http://', HTTPAdapter(max_retries=retries))
 s.mount('https://', HTTPAdapter(max_retries=retries))
 
