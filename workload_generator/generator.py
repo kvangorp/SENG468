@@ -1,12 +1,24 @@
+import logging
 import requests
 from time import time
 from database2xml import XMLgen
 from lxml import etree
 import concurrent.futures
 
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
+#logging.basicConfig(level=logging.DEBUG)
+
+s = requests.Session()
+retries = Retry(total=5, allowed_methods={'GET', 'POST'}, backoff_factor=1, status_forcelist=[ 500, 502, 504 ])
+s.mount('http://', HTTPAdapter(max_retries=retries))
+s.mount('https://', HTTPAdapter(max_retries=retries))
+
+
 WEBSERVER = 'WS'
 TRANSACTIONSERVER = 'TS'
-fileName = './testfiles/1000userWorkLoad.txt'
+fileName = './testfiles/1userWorkLoad.txt'
 
 def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transactionNum=1):
     log = {
@@ -401,7 +413,7 @@ def handleUserCommands(commands):
 
 
 def main():
-    # Open and read workload file
+    # Open and read workload file 
     workLoadFile = open(fileName, 'r')
     lines = workLoadFile.readlines()
 
