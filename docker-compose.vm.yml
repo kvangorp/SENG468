@@ -184,6 +184,176 @@ services:
       - quoteServerHost=192.168.4.2
       - serverNum=10
 
+  server11:
+    container_name: transaction_server11
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8011:8000"
+      - "4455:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=11
+
+  server12:
+    container_name: transaction_server12
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8012:8000"
+      - "4456:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=12
+ 
+  server13:
+    container_name: transaction_server13
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8013:8000"
+      - "4457:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=13
+
+  server14:
+    container_name: transaction_server14
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8014:8000"
+      - "4458:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=14
+
+  server15:
+    container_name: transaction_server15
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8015:8000"
+      - "4459:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=15
+
+  server16:
+    container_name: transaction_server16
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8016:8000"
+      - "4460:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=16
+
+  server17:
+    container_name: transaction_server17
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8017:8000"
+      - "4461:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=17
+ 
+  server18:
+    container_name: transaction_server18
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8018:8000"
+      - "4462:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=18
+
+  server19:
+    container_name: transaction_server19
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8019:8000"
+      - "4463:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=19
+
+  server20:
+    container_name: transaction_server20
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8020:8000"
+      - "4464:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=20
+
   nginx:
     build: ./transaction_server/nginx
     ports: 
@@ -199,3 +369,13 @@ services:
     - server8
     - server9
     - server10
+    - server11
+    - server12
+    - server13
+    - server14
+    - server15
+    - server16
+    - server17
+    - server18
+    - server19
+    - server20
