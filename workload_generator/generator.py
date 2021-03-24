@@ -407,6 +407,21 @@ def parseLine(line):
 
     return parsedCommand
 
+def groupUserCommands(n, commandsByUser):
+    commandsByNUsers = []
+
+    while commandsByUser:
+        group = []
+        for _ in range(n):
+            if not commandsByUser:
+                break
+            group += commandsByUser.pop()
+        
+        commandsByNUsers.append(group)
+    
+    return commandsByNUsers
+            
+
 def handleUserCommands(commands):
     for command in commands:
         commandSwitch(command)
@@ -424,9 +439,13 @@ def main():
     commandsByUser = sortByUser(commandLines)
     numUsers = len(commandsByUser)
 
+    # Partition user commands so each thread can focus on 10 users
+    commandsGroupedBy10Users = groupUserCommands(10, list(commandsByUser.values()))
+    numThreads = len(commandsGroupedBy10Users)
+
     # Set up a thread for each user
-    with concurrent.futures.ThreadPoolExecutor(max_workers=numUsers) as executor:
-        executor.map(handleUserCommands, commandsByUser.values())
+    with concurrent.futures.ThreadPoolExecutor(max_workers=numThreads) as executor:
+        executor.map(handleUserCommands, commandsGroupedBy10Users)
 
     # Run dumplog
     dumplogCommand = parseLine(dumplogLine)
