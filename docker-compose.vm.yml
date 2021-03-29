@@ -7,12 +7,16 @@ services:
     ports:
       - "27017:27017"
     command: --quiet
+    networks: 
+      - localnet
 
   redis:
     container_name: redis
     image: redis
     ports:
       - "6379:6379"
+    networks: 
+      - localnet
 
   server:
     container_name: transaction_server
@@ -30,57 +34,8 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=1
-
-  server2:
-    container_name: transaction_server2
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8002:8000"
-      - "4446:4444"
-    depends_on:
-      - mongodb
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=192.168.4.2
-      - serverNum=2
-
-  server3:
-    container_name: transaction_server3
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8003:8000"
-      - "4447:4444"
-    depends_on:
-      - mongodb
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=192.168.4.2
-      - serverNum=3
-
-  server4:
-    container_name: transaction_server4
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8004:8000"
-      - "4448:4444"
-    depends_on:
-      - mongodb
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=192.168.4.2
-      - serverNum=4
+    networks: 
+      - localnet
 
   nginx:
     build: ./transaction_server/nginx
@@ -88,6 +43,9 @@ services:
       - "8080:80"
     depends_on:
     - server
-    - server2
-    - server3
-    - server4
+    networks: 
+      - localnet
+
+networks:
+  localnet:
+    driver: 'bridge'
