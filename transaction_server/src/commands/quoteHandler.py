@@ -7,30 +7,30 @@ redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=
 EXPIRY_SECS = 60
 
 def get_quote(username, stockSymbol, transactionNum=1, isSysEvent=False):
-    res = redis_instance.hgetall(stockSymbol)
-    if not res:
+    # res = redis_instance.hgetall(stockSymbol)
+    # if not res:
         # If quote is not in redis database
         # Get quote from quote server
-        data = quoteClient(stockSymbol, username)
-        elements = data.split(',')
+    data = quoteClient(stockSymbol, username)
+    elements = data.split(',')
 
-        # Add quote to redis database
-        quote = {
-            "quote": float(elements[0]),
-            "stockSymbol": stockSymbol,
-            "userId": username,
-            "timestamp": int(elements[3]),
-            "cryptoKey": elements[4],
-        }
-        redis_instance.hmset(stockSymbol, quote)
-        redis_instance.expire(stockSymbol, EXPIRY_SECS)
-        res = redis_instance.hgetall(stockSymbol)
+    # Add quote to redis database
+    # quote = {
+    #     "quote": float(elements[0]),
+    #     "stockSymbol": stockSymbol,
+    #     "userId": username,
+    #     "timestamp": int(elements[3]),
+    #     "cryptoKey": elements[4],
+    # }
+    # redis_instance.hmset(stockSymbol, quote)
+    # redis_instance.expire(stockSymbol, EXPIRY_SECS)
+    # res = redis_instance.hgetall(stockSymbol)
 
-        # Log quote server transaction
-        log_quote_server_transaction(transactionNum, res["quote"], res["stockSymbol"], username, res["timestamp"], res["cryptoKey"])
-        print(res)
+    # Log quote server transaction
+    # log_quote_server_transaction(transactionNum, res["quote"], res["stockSymbol"], username, res["timestamp"], res["cryptoKey"])
+    # print(res)
 
-    return float(res["quote"])
+    return float(elements[0])
 
 def quoteClient(stockSymbol, username):
     # Create the socket

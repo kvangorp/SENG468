@@ -10,7 +10,7 @@ import time
 import redis, os, json
 from django.conf import settings
 
-CACHE_TTL = getattr(settings, 'CACHE_TTL')
+# CACHE_TTL = getattr(settings, 'CACHE_TTL')
 redis_instance = redis.StrictRedis(charset="utf-8", decode_responses=True, host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
 class AddView(APIView):
@@ -48,7 +48,7 @@ class AddView(APIView):
 
 class DumplogView(APIView):
 
-    @method_decorator(cache_page(CACHE_TTL))
+    # @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
         userId = request.data.get("userId")
         keys_str = redis_instance.keys()
@@ -68,7 +68,7 @@ class DumplogView(APIView):
 
 class DisplaySummaryView(APIView):
 
-    @method_decorator(cache_page(CACHE_TTL))
+    # @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
