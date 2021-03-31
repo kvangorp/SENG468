@@ -12,7 +12,7 @@ from django.conf import settings
 from transactions.serializers import AccountTransactionSerializer, UserCommandSerializer, ErrorEventSerializer, QuoteServerTransactionSerializer
 from django.core import serializers
 
-CACHE_TTL = getattr(settings, 'CACHE_TTL')
+# CACHE_TTL = getattr(settings, 'CACHE_TTL')
 
 class AddView(APIView):
 
@@ -49,7 +49,7 @@ class AddView(APIView):
 
 class DumplogView(APIView):
 
-    @method_decorator(cache_page(CACHE_TTL))
+    # @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
         userId = request.data.get("userId")
         if not userId:
@@ -72,7 +72,7 @@ class DumplogView(APIView):
 
 class DisplaySummaryView(APIView):
 
-    @method_decorator(cache_page(CACHE_TTL))
+    # @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
         # Get request data
         userId = request.data.get("userId")
