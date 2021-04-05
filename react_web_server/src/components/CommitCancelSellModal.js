@@ -16,7 +16,7 @@ import App from "../App";
 import axios from "axios";
 import SellModal from './SellModal.js'
 
- 
+// This creates a class for the modal created by clicking the Sell Button
 export default class CommitSellModal extends Component {
   constructor(props) {
     super(props);
@@ -26,6 +26,8 @@ export default class CommitSellModal extends Component {
     };
     
   }
+
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
 
@@ -38,6 +40,7 @@ export default class CommitSellModal extends Component {
     this.setState({ activeItem });
   };
   
+  // Creates and associates buttons for the modal users to interact with
   render() {
     const { toggle, onSave } = this.props;
 
@@ -47,12 +50,18 @@ export default class CommitSellModal extends Component {
           <p>What would you do to do? </p>
           <Button
             color="success"
+            // This button triggers a commit Sell event, 
+            // which sends a string "commit" to SellModal.js, 
+            // triggering the commit Sell
             onClick={() => onSave('commit')}//this.commitBuy(this.state.activeItem)}
           >
               Commit Sell
           </Button>
           <Button
             color='danger'
+            // This button triggers a cancel Sell event, 
+            // which sends a string "cancel" to SellModal.js, 
+            // triggering the cancel Sell
             onClick={() => onSave('cancel')}//this.cancelBuy(this.state.activeItem)}
           >
               Cancel Sell

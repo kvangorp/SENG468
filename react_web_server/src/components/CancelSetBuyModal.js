@@ -13,8 +13,8 @@ import {
   Label,
 } from "reactstrap";
 
-export default class CancelSetBuyModal extends Component {
-  
+// This creates a class for the modal created by clicking the Buy Button
+export default class CancelSetBuyModal extends Component {  
   constructor(props) {
     super(props);
     this.state = {
@@ -23,19 +23,21 @@ export default class CancelSetBuyModal extends Component {
     };
   }
 
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
     const state = { ...this.state, [name]: value };
     this.setState(state);
   };
 
+  // call handle function and close modal
   triggerCancelSetBuy = () => {
     this.handleCancelSetBuy()
     this.props.toggle()
   }
 
+  // send HTTP request to transaction server and log transaction
   handleCancelSetBuy = () => {
-    
     let userId = this.state.userId;
     let stockSymbol = this.state.stockSymbol;
 
@@ -54,6 +56,7 @@ export default class CancelSetBuyModal extends Component {
     }) 
   }
 
+  // Creates and associates buttons for the modal users to interact with
   render() {
     const { toggle} = this.props;
 

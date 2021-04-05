@@ -11,6 +11,7 @@ import {
   Label,
 } from "reactstrap";
 
+// This creates a class for the modal created by clicking the Add Button
 export default class AddModal extends Component {
   constructor(props) {
     super(props);
@@ -20,6 +21,7 @@ export default class AddModal extends Component {
     };
   }
 
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
 
@@ -27,11 +29,13 @@ export default class AddModal extends Component {
       value = e.target.checked;
     }
 
+    // Populate item based on user input
     const activeItem = { ...this.state.activeItem, [name]: value };
 
     this.setState({ activeItem });
   };
   
+  // Creates and associates input fields for the modal users to interact with
   render() {
     const { toggle, onSave } = this.props;
 
@@ -67,6 +71,9 @@ export default class AddModal extends Component {
         <ModalFooter>
           <Button
             color="success"
+            // When this add button is clicked the user 
+            // input is saved in a JSON object and returned 
+            // to the web server as the body of a HTTP packet
             onClick={() => onSave(this.state.activeItem)}
           >
             Add

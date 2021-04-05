@@ -1,6 +1,10 @@
 import sys
 from lxml import etree
 
+# These following commands are used by
+# the Dumplog command to generate a 
+# readable XML representation of our 
+# Transaction Database.
 def userCommandsGen(input):
     commandType = etree.Element("userCommand") 
         
@@ -216,6 +220,10 @@ def logGen(input):
 
     return etree.ElementTree(log)
 
+
+# A switch style logic that itereates 
+# through the list of transactions passed 
+# and calls their respective XMLGen Functions.
 def createDocument(filename, transaction_list):
     log = etree.Element("log")
     for row in transaction_list:
