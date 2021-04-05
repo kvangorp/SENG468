@@ -30,11 +30,13 @@ export default class CancelSetBuyModal extends Component {
     this.setState(state);
   };
 
+  // call handle function and close modal
   triggerCancelSetBuy = () => {
     this.handleCancelSetBuy()
     this.props.toggle()
   }
 
+  // send HTTP request to transaction server and log transaction
   handleCancelSetBuy = () => {
     let userId = this.state.userId;
     let stockSymbol = this.state.stockSymbol;

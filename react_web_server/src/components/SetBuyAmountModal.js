@@ -24,19 +24,21 @@ export default class SetBuyAmountModal extends Component {
     };
   }
 
+  // change state variables
   handleChange = (e) => {
     let { name, value } = e.target;
     const state = { ...this.state, [name]: value };
     this.setState(state);
   };
 
+  // call handle function and close modal
   triggerSetBuyAmount = () => {
     this.handleSetBuyAmount()
     this.props.toggle()
   }
 
+  // send HTTP request to transaction server and log transaction
   handleSetBuyAmount = () => {
-    
     let userId = this.state.userId;
     let stockSymbol = this.state.stockSymbol;
     let amount = this.state.dollarAmount

@@ -23,17 +23,20 @@ export default class CancelSetSellModal extends Component {
     };
   }
 
+  // change state variables
   handleChange = (e) => {
     let { name, value } = e.target;
     const state = { ...this.state, [name]: value };
     this.setState(state);
   };
 
+  // call handle function and close modal
   triggerCancelSetSell = () => {
     this.handleCancelSetSell()
     this.props.toggle()
   }
 
+  // send HTTP request to transaction server and log transaction
   handleCancelSetSell = () => {
     
     let userId = this.state.userId;

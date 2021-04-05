@@ -88,6 +88,7 @@ class App extends Component {
       </div> 
     );
   }
+  // open and close modal
   sellToggle = () => {
     this.setState({ sellModal: !this.state.sellModal });
   };
@@ -157,10 +158,10 @@ class App extends Component {
     })
     .catch((error) => {
       this.errorLogger(item["userId"],"BUY")
-    })
-
-   
+    })   
   };
+
+    // open and close modal
   buyToggle = () => {
     this.setState({ buyModal: !this.state.buyModal });
   };
@@ -208,6 +209,7 @@ class App extends Component {
       this.errorLogger(item["userId"],parseFloat(item["amount"]),"ADD")
     })    
   };
+  // open and close modal
   addToggle = () => {
     this.setState({ addModal: !this.state.addModal });
   };
@@ -255,6 +257,7 @@ class App extends Component {
     })    
     
   };
+  // open and close modal
   quoteToggle = () => {
     this.setState({ quoteModal: !this.state.quoteModal });
   };
@@ -279,6 +282,7 @@ class App extends Component {
     );
   }
 
+  // open and close modal
   toggleSetBuyAmountModal = () => {
     this.setState({setBuyAmountModal: !this.state.setBuyAmountModal})
   }
@@ -303,6 +307,7 @@ class App extends Component {
     );
   }
 
+  // open and close modal
   toggleSetBuyTriggerModal = () => {
     this.setState({setBuyTriggerModal: !this.state.setBuyTriggerModal})
   }
@@ -327,6 +332,7 @@ class App extends Component {
     );
   }
 
+  // open and close modal
   toggleCancelSetBuyModal = () => {
     this.setState({cancelSetBuyModal: !this.state.cancelSetBuyModal})
   }
@@ -350,7 +356,7 @@ class App extends Component {
       
     );
   }
-
+  // open and close modal
   toggleSetSellAmountModal = () => {
     this.setState({setSellAmountModal: !this.state.setSellAmountModal})
   }
@@ -374,7 +380,7 @@ class App extends Component {
       
     );
   }
-
+  // open and close modal
   toggleSetSellTriggerModal = () => {
     this.setState({setSellTriggerModal: !this.state.setSellTriggerModal})
   }
@@ -398,7 +404,7 @@ class App extends Component {
       
     );
   }
-
+  // open and close modal
   toggleCancelSetSellModal = () => {
     this.setState({cancelSetSellModal: !this.state.cancelSetSellModal})
   }
@@ -422,7 +428,7 @@ class App extends Component {
       
     );
   }
-
+  // open and close modal
   toggleDisplaySummaryModal = () => {
     this.setState({displaySummaryModal: !this.state.displaySummaryModal})
   }
@@ -446,11 +452,12 @@ class App extends Component {
       
     );
   }
-
+  // open and close modal
   toggleDumplogModal = () => {
     this.setState({dumplogModal: !this.state.dumplogModal})
   }
- 
+  // ********************************************************************************************************/
+  // render all buttons
   render() {
     return (
       <main className="container">
