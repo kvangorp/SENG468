@@ -4,3 +4,6 @@
 .DS_Store
 *.gz
 *.xml
+**/node_modules
+Pipfile.lock
+Pipfile

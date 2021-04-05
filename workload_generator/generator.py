@@ -1,7 +1,5 @@
 import requests
 from time import time
-from database2xml import XMLgen
-from lxml import etree
 import concurrent.futures
 
 WEBSERVER = 'WS'
@@ -347,13 +345,16 @@ def dumplog(transactionNum=0, userid='', filename=''):
     if userid:
         data = {
             'userId': userid,
+            'filename': filename,
             'transactionNum': transactionNum
         }
         res = requests.post('http://localhost:8080/api/commands/dumplog/', json=data)
     else:
-        res = requests.post('http://localhost:8080/api/commands/dumplog/') 
-    print(res.json())
-    XMLgen.createDocument(filename, res.json())
+        data = {
+            'filename': filename,
+            'transactionNum': transactionNum
+        }
+        res = requests.post('http://localhost:8080/api/commands/dumplog/', json=data)
 
 
 def display_summary(transactionNum, userId):

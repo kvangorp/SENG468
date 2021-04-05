@@ -294,5 +294,5 @@ def createDocument(filename, transaction_list):
             eTree = errorEventGen(input)
             log.append(eTree)
     tree = etree.ElementTree(log)
-    tree.write(filename+'.xml', pretty_print=True, encoding=None, xml_declaration=True)
+    tree.write(f"./commands/views/database2xml/{filename}.xml", pretty_print=True, encoding=None, xml_declaration=True)
 

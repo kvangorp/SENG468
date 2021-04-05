@@ -37,12 +37,192 @@ services:
     networks: 
       - localnet
 
+  server2:
+    container_name: transaction_server2
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8002:8000"
+      - "4446:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=2
+    networks: 
+      - localnet
+      
+  server3:
+    container_name: transaction_server3
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8003:8000"
+      - "4447:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=3
+    networks: 
+      - localnet
+
+  server4:
+    container_name: transaction_server4
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8004:8000"
+      - "4448:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=4
+    networks: 
+      - localnet
+
+  server5:
+    container_name: transaction_server5
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8005:8000"
+      - "4449:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=5
+    networks: 
+      - localnet
+
+  server6:
+    container_name: transaction_server6
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8006:8000"
+      - "4450:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=6
+    networks: 
+      - localnet
+
+  server7:
+    container_name: transaction_server7
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8007:8000"
+      - "4451:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=7
+    networks: 
+      - localnet
+
+  server8:
+    container_name: transaction_server8
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8008:8000"
+      - "4452:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=8
+    networks: 
+      - localnet
+
+  server9:
+    container_name: transaction_server9
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8009:8000"
+      - "4453:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=9
+    networks: 
+      - localnet
+
+  server10:
+    container_name: transaction_server10
+    build: ./transaction_server
+    command: gunicorn server.wsgi:application --timeout 300
+    volumes:
+      - ./transaction_server/src:/code
+    ports:
+      - "8010:8000"
+      - "4454:4444"
+    depends_on:
+      - mongodb
+      - redis
+    entrypoint: /entrypoint.sh
+    environment: 
+      - quoteServerHost=192.168.4.2
+      - serverNum=10
+    networks: 
+      - localnet
+
   nginx:
     build: ./transaction_server/nginx
     ports: 
       - "8080:80"
     depends_on:
     - server
+    - server2
+    - server3
+    - server4
+    - server5
+    - server6
+    - server7
+    - server8
+    - server9
+    - server10
     networks: 
       - localnet
 
