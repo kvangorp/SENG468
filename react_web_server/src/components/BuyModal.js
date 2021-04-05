@@ -14,6 +14,7 @@ import {
 import commandLogger from '../App.js'
 import axios from "axios";
 
+// This creates a class for the modal created by clicking the Buy Button
 export default class BuyModal extends Component {
   constructor(props) {
     super(props);
@@ -59,6 +60,7 @@ export default class BuyModal extends Component {
     }) 
   }
 
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
 
@@ -66,11 +68,15 @@ export default class BuyModal extends Component {
       value = e.target.checked;
     }
 
+    // Populate item based on user input
     const activeItem = { ...this.state.activeItem, [name]: value };
 
     this.setState({ activeItem });
   };
-   
+  
+  // Logs initial buy transaction, then opens 
+  // secondary modal to allow user to commit 
+  // or cancel their buy command
   handleBuySubmit = (item) => {
     var request={
       'transactionNum': 1,
@@ -82,7 +88,7 @@ export default class BuyModal extends Component {
     .then((response) => {
       console.log(response);
       this.commandLogger(item["userId"],parseFloat(item["amount"]),"BUY",item["stockSymbol"]);
-      //alert("save " + JSON.stringify(request)); 
+      // Initiates modal for a 60 second lifespan
       this.setState({commitModal: !this.state.commitModal}, () => {setTimeout(this.handleClose, 55000)})
     })
     .catch((error) => {
@@ -109,17 +115,20 @@ export default class BuyModal extends Component {
       this.commandLogger(this.state.activeItem["userId"],0.0, "CANCEL_BUY");
       setTimeout(window.location.reload(),2000)
     }) 
-
   }
 
   triggerCommitModal = () => {
     this.handleBuySubmit(this.state.activeItem)
   }
+
   closeCommitModal = ()  => {
     this.setState({commitModal: !this.state.commitModal})
-    setTimeout(window.location.reload(),1000)
-   
+    setTimeout(window.location.reload(),1000) 
   }
+
+  // If user clicks button to commit buy 
+  // command, a commit buy is logged, and 
+  // the server returns to home page
   commitBuy = (item) => {
     var request={
       'userId': item["userId"],
@@ -139,6 +148,10 @@ export default class BuyModal extends Component {
       setTimeout(window.location.reload(),1000)
     }) 
   }
+
+  // If user clicks button to cancel buy 
+  // command, a cancel buy is logged, and 
+  // the server returns to home page
   cancelBuy = (item) => {
     var request={
         'userId': item["userId"],
@@ -158,7 +171,8 @@ export default class BuyModal extends Component {
         setTimeout(window.location.reload(),1000)
       })   
       
-  } 
+  }
+  
   commitOrCancel = (string) => {
     if(string==='commit'){
       this.commitBuy(this.state.activeItem)
@@ -166,6 +180,8 @@ export default class BuyModal extends Component {
       this.cancelBuy(this.state.activeItem)
     }
   }
+
+  // Creates and associates input fields for the modal users to interact with
   render() {
     const { toggle, onSave } = this.props;
 

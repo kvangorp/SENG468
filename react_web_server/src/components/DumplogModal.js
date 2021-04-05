@@ -18,8 +18,8 @@ import {
   CardBody
 } from "reactstrap";
 
+// This creates a class for the modal created by clicking the Dumplog Button
 export default class DumplogModal extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
@@ -28,6 +28,7 @@ export default class DumplogModal extends Component {
     };
   }
 
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
     const state = { ...this.state, [name]: value };
@@ -39,6 +40,7 @@ export default class DumplogModal extends Component {
     this.props.toggle()
   }
 
+  // 
   handleDumplog = () => {
     let userId = this.state.userId;
     let filename = this.state.filename;
@@ -63,6 +65,7 @@ export default class DumplogModal extends Component {
     console.log(response);
   }
 
+  // Creates and associates buttons for the modal users to interact with
   render() {
     const { toggle } = this.props;
 

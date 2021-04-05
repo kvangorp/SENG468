@@ -13,8 +13,8 @@ import {
   Label,
 } from "reactstrap";
 
-export default class CancelSetBuyModal extends Component {
-  
+// This creates a class for the modal created by clicking the Buy Button
+export default class CancelSetBuyModal extends Component {  
   constructor(props) {
     super(props);
     this.state = {
@@ -23,6 +23,7 @@ export default class CancelSetBuyModal extends Component {
     };
   }
 
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
     const state = { ...this.state, [name]: value };
@@ -54,6 +55,7 @@ export default class CancelSetBuyModal extends Component {
     }) 
   }
 
+  // Creates and associates buttons for the modal users to interact with
   render() {
     const { toggle} = this.props;
 

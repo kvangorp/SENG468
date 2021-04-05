@@ -2,7 +2,7 @@
 
 ## Prerequisites for running the Workload Generator on its own (Local)
 
-For the Workload Generato to be functional on your local machine, the transaction server and the quote server must be running as well. Refer to the README in transaction_server and quote_server to set those up.
+For the Workload Generator to be functional on your local machine, the transaction server and the quote server must be running as well. Refer to the README in transaction_server and quote_server to set those up.
 
 ## Prerequisites to running the Workload Generator on its own (VM)
 

@@ -13,7 +13,7 @@ import {
 import CommitSellModal from './CommitCancelSellModal.js'
 import axios from "axios";
 
-
+// This creates a class for the modal created by clicking the Sell Button
 export default class SellModal extends Component {
   constructor(props) {
     super(props);
@@ -23,6 +23,7 @@ export default class SellModal extends Component {
       commitSellModal:false,
     };
   }
+  
   commandLogger = (userid='', amount=0.0, command='', stockSymbol='', transactionNum=1) => {
     var request = {
         'type': 'userCommand',
@@ -56,6 +57,7 @@ export default class SellModal extends Component {
     }) 
   }
 
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
 
@@ -68,6 +70,9 @@ export default class SellModal extends Component {
     this.setState({ activeItem });
   };
 
+  // Logs initial sell transaction, then opens 
+  // secondary modal to allow user to commit 
+  // or cancel their sell command
   handleSellSubmit = (item) => {
     var request={
       'transactionNum': 1,
@@ -79,7 +84,7 @@ export default class SellModal extends Component {
     .then((response) => {
       console.log(response);
       this.commandLogger(item["userId"],parseFloat(item["amount"]),"SELL",item["stockSymbol"]);
-      //alert("save " + JSON.stringify(request)); 
+      // Initiates modal for a 60 second lifespan
       this.setState({commitSellModal: !this.state.commitSellModal}, () => {setTimeout(this.handleClose, 55000)})
     })
     .catch((error) => {
@@ -113,10 +118,15 @@ export default class SellModal extends Component {
   triggerCommitSellModal = () => {
     this.handleSellSubmit(this.state.activeItem)
   }
+
   closeCommitModal = ()  => {
     this.setState({commitSellModal: !this.state.commitSellModal})
     setTimeout(window.location.reload(),1000)
   }
+
+  // If user clicks button to commit sell 
+  // command, a commit sell is logged, and 
+  // the server returns to home page
   commitSell = (item) => {
     var request={
       'userId': item["userId"],
@@ -137,6 +147,10 @@ export default class SellModal extends Component {
       setTimeout(window.location.reload(),1000)
     }) 
   }
+
+  // If user clicks button to cancel sell 
+  // command, a cancel sell is logged, and 
+  // the server returns to home page
   cancelSell = (item) => {
     var request={
         'userId': item["userId"],
@@ -166,6 +180,7 @@ export default class SellModal extends Component {
     }
   }
   
+  // Creates and associates input fields to the modal users interact with
   render() {
     const { toggle, onSave } = this.props;
 
