@@ -35,12 +35,14 @@ export default class DumplogModal extends Component {
     this.setState(state);
   };
 
+  // Open Dumplog modal
   triggerDumplog = () => {
     this.handleDumplog()
     this.props.toggle()
   }
 
-  // 
+  // Sends user input as a command to the Dumplog 
+  // endpoint, and logs transaction in database
   handleDumplog = () => {
     let userId = this.state.userId;
     let filename = this.state.filename;

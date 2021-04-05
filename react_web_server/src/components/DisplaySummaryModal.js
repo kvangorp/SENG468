@@ -18,8 +18,8 @@ import {
   CardBody
 } from "reactstrap";
 
+// This creates a class for the modal created by clicking the Display Summary Button
 export default class DisplaySummaryModal extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
@@ -35,6 +35,7 @@ export default class DisplaySummaryModal extends Component {
     };
   }
 
+  // When user input is sent or buttons are clicked, this method updates modal state
   handleChange = (e) => {
     let { name, value } = e.target;
     const state = { ...this.state, [name]: value };
@@ -45,6 +46,8 @@ export default class DisplaySummaryModal extends Component {
     this.handleDisplaySummary()
   }
 
+  // Sends user input as a command to the Display Summary 
+  // endpoint, and logs transaction in database 
   handleDisplaySummary = () => {
     let userId = this.state.userId;
 
@@ -73,18 +76,25 @@ export default class DisplaySummaryModal extends Component {
     })
   }
 
+  // When a user clicks this button, a box 
+  // opens showing the stocks the use has
   toggleStocksButton = () => {
     this.setState({stocksButton: !this.state.stocksButton})
   }
 
+  // When a user clicks this button, a box 
+  // opens showing the triggers the use has set
   toggleTriggersButton = () => {
     this.setState({triggersButton: !this.state.triggersButton})
   }
 
+  // When a user clicks this button, a box 
+  // opens showing the transactions the use has made
   toggleTransactionsButton = () => {
     this.setState({transactionsButton: !this.state.transactionsButton})
   }
 
+  // Creates and associates buttons for the modal users to interact with
   render() {
     const { toggle } = this.props;
 

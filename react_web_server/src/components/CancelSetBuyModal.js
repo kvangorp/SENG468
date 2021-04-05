@@ -36,7 +36,6 @@ export default class CancelSetBuyModal extends Component {
   }
 
   handleCancelSetBuy = () => {
-    
     let userId = this.state.userId;
     let stockSymbol = this.state.stockSymbol;
 

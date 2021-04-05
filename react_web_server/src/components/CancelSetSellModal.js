@@ -13,8 +13,8 @@ import {
   Label,
 } from "reactstrap";
 
+
 export default class CancelSetSellModal extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
