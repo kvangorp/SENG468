@@ -51,9 +51,11 @@ class DumplogView(APIView):
 
     @method_decorator(cache_page(CACHE_TTL))
     def post(self, request):
+        # Get request data
         userId = request.data.get("userId")
         filename = request.data.get("filename")
 
+        # Get Redis Keys, sort them, and flatten them for XMLGen
         keys_str = redis_instance.keys()
         values = []
         keys_int = list(map(int, keys_str))
@@ -63,9 +65,11 @@ class DumplogView(APIView):
             for value in value_list:
                 values.append(json.loads(value))
 
+        # Filter out at transactions not made by a specific user.
         if userId:
             values = [value for value in values if value['username'] == userId]
         
+        # Create XML
         XMLgen.createDocument(filename, values)
         file = open(f'./commands/views/database2xml/{filename}.xml', 'r')
         allLines = file.read()
