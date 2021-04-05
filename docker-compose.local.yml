@@ -25,7 +25,7 @@ services:
   server:
     container_name: transaction_server
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -43,7 +43,7 @@ services:
   server2:
     container_name: transaction_server2
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -61,7 +61,7 @@ services:
   server3:
     container_name: transaction_server3
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -79,7 +79,7 @@ services:
   server4:
     container_name: transaction_server4
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -97,7 +97,7 @@ services:
   server5:
     container_name: transaction_server5
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -115,7 +115,7 @@ services:
   server6:
     container_name: transaction_server6
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -133,7 +133,7 @@ services:
   server7:
     container_name: transaction_server7
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -151,7 +151,7 @@ services:
   server8:
     container_name: transaction_server8
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -169,7 +169,7 @@ services:
   server9:
     container_name: transaction_server9
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -187,7 +187,7 @@ services:
   server10:
     container_name: transaction_server10
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
     volumes:
       - ./transaction_server/src:/code
     ports:
