@@ -1,6 +1,15 @@
+import logging
 import requests
 from time import time
 import concurrent.futures
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
+
+s = requests.Session()
+retries = Retry(total=5, allowed_methods=frozenset({'GET', 'POST'}), backoff_factor=1, status_forcelist=[ 500, 502, 504 ], raise_on_status = True)
+s.mount('http://', HTTPAdapter(max_retries=retries))
+s.mount('https://', HTTPAdapter(max_retries=retries))
 
 WEBSERVER = 'WS'
 fileName = './testfiles/1userWorkLoad.txt'
@@ -16,7 +25,7 @@ def user_command_log(userid='', amount=0.0, command='', stockSymbol='', transact
         'stockSymbol': stockSymbol,
         'funds': amount
     }
-    logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
+    logger = s.post(f'http://localhost:8080/api/transactions/', json=log)
 
 def error_command_log(userid='', command='', transactionNum=1):
     log = {
@@ -28,7 +37,7 @@ def error_command_log(userid='', command='', transactionNum=1):
         "username": userid,
         "errorMessage": "Invalid number of parameters."
     }
-    logger = requests.post(f'http://localhost:8080/api/transactions/', json=log)
+    logger = s.post(f'http://localhost:8080/api/transactions/', json=log)
 
 def commandSwitch(command):
 	#IF COMMAND MATCHES, CALL THE FUNCTION FOR THE COMMAND, WITH THE PARAMETERS 
@@ -162,7 +171,7 @@ def add(transactionNum, userid, amount):
     }
     user_command_log(userid, amount, 'ADD', transactionNum=transactionNum)
 
-    res = requests.post('http://localhost:8080/api/commands/add/', json=data)
+    res = s.post('http://localhost:8080/api/commands/add/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
    
 
@@ -175,7 +184,7 @@ def quote(transactionNum, userid, stock):
     
     user_command_log(userid, 0, 'QUOTE', stock, transactionNum=transactionNum)
 
-    res = requests.post('http://localhost:8080/api/commands/quote/', json=data)
+    res = s.post('http://localhost:8080/api/commands/quote/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
    
 
@@ -189,7 +198,7 @@ def buy(transactionNum, userid, stock, dollar_amount):
     
     user_command_log(userid, dollar_amount, 'BUY', stock, transactionNum=transactionNum)
 
-    res = requests.post('http://localhost:8080/api/commands/buy/', json=data)
+    res = s.post('http://localhost:8080/api/commands/buy/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
     
 
@@ -201,7 +210,7 @@ def commit_buy(transactionNum, userid):
     
     user_command_log(userid, 0.0, 'COMMIT_BUY', '', transactionNum=transactionNum) 
 
-    res = requests.post('http://localhost:8080/api/commands/commit_buy/', json=data)
+    res = s.post('http://localhost:8080/api/commands/commit_buy/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
    
 
@@ -214,7 +223,7 @@ def cancel_buy(transactionNum, userid):
     
     user_command_log(userid=userid, command='CANCEL_BUY',transactionNum=transactionNum) 
 
-    res = requests.post('http://localhost:8080/api/commands/cancel_buy/', json=data)
+    res = s.post('http://localhost:8080/api/commands/cancel_buy/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
     
 
@@ -229,7 +238,7 @@ def sell(transactionNum, userid, stock, dollar_amount):
     
     user_command_log(userid, dollar_amount, 'SELL', stock, transactionNum=transactionNum)
 
-    res = requests.post('http://localhost:8080/api/commands/sell/', json=data)
+    res = s.post('http://localhost:8080/api/commands/sell/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
    
 
@@ -241,7 +250,7 @@ def commit_sell(transactionNum, userid):
    
     user_command_log(userid, 0.0, 'COMMIT_SELL', '', transactionNum=transactionNum)
 
-    res = requests.post('http://localhost:8080/api/commands/commit_sell/', json=data)
+    res = s.post('http://localhost:8080/api/commands/commit_sell/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
  
 
@@ -253,7 +262,7 @@ def cancel_sell(transactionNum, userid):
     
     user_command_log(userid=userid, command='CANCEL_SELL', transactionNum=transactionNum)
 
-    res = requests.post('http://localhost:8080/api/commands/cancel_sell/', json=data)
+    res = s.post('http://localhost:8080/api/commands/cancel_sell/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
      
 
@@ -267,7 +276,7 @@ def set_buy_ammount(transactionNum, userId, stockSymbol, dollar_amount):
     
     user_command_log(userid=userId, command='SET_BUY_AMOUNT', amount=dollar_amount, transactionNum=transactionNum)
 
-    res = requests.post(f'http://localhost:8080/api/commands/set_buy_amount/', json=data)
+    res = s.post(f'http://localhost:8080/api/commands/set_buy_amount/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
     
 
@@ -280,7 +289,7 @@ def cancel_set_buy(transactionNum, userId, stockSymbol):
     
     user_command_log(userid=userId, command='CANCEL_SET_BUY',transactionNum=transactionNum)
 
-    res = requests.post(f'http://localhost:8080/api/commands/cancel_set_buy/', json=data)
+    res = s.post(f'http://localhost:8080/api/commands/cancel_set_buy/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
     
 
@@ -294,7 +303,7 @@ def set_buy_trigger(transactionNum, userId, stockSymbol, dollar_amount):
     
     user_command_log(userid=userId, command='SET_BUY_TRIGGER', amount=dollar_amount, transactionNum=transactionNum)
     
-    res = requests.post(f'http://localhost:8080/api/commands/set_buy_trigger/', json=data)
+    res = s.post(f'http://localhost:8080/api/commands/set_buy_trigger/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
    
 
@@ -308,7 +317,7 @@ def set_sell_ammount(transactionNum, userId, stockSymbol, stock_amount):
    
     user_command_log(userid=userId, command='SET_SELL_AMOUNT', amount=stock_amount, transactionNum=transactionNum)
 
-    res = requests.post(f'http://localhost:8080/api/commands/set_sell_amount/', json=data)
+    res = s.post(f'http://localhost:8080/api/commands/set_sell_amount/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
     
 
@@ -322,7 +331,7 @@ def set_sell_trigger(transactionNum, userId, stockSymbol, dollar_amount):
     
     user_command_log(userid=userId, command='SET_SELL_TRIGGER', amount=dollar_amount, transactionNum=transactionNum)
 
-    res = requests.post(f'http://localhost:8080/api/commands/set_sell_trigger/', json=data)
+    res = s.post(f'http://localhost:8080/api/commands/set_sell_trigger/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
    
 
@@ -335,7 +344,7 @@ def cancel_set_sell(transactionNum, userId, stockSymbol):
     
     user_command_log(userid=userId, command='CANCEL_SET_SELL',transactionNum=transactionNum)
     
-    res = requests.post(f'http://localhost:8080/api/commands/cancel_set_sell/', json=data)
+    res = s.post(f'http://localhost:8080/api/commands/cancel_set_sell/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
     
 
@@ -348,13 +357,13 @@ def dumplog(transactionNum=0, userid='', filename=''):
             'filename': filename,
             'transactionNum': transactionNum
         }
-        res = requests.post('http://localhost:8080/api/commands/dumplog/', json=data)
+        res = s.post('http://localhost:8080/api/commands/dumplog/', json=data)
     else:
         data = {
             'filename': filename,
             'transactionNum': transactionNum
         }
-        res = requests.post('http://localhost:8080/api/commands/dumplog/', json=data)
+        res = s.post('http://localhost:8080/api/commands/dumplog/', json=data)
 
 
 def display_summary(transactionNum, userId):
@@ -363,7 +372,7 @@ def display_summary(transactionNum, userId):
     }
     
     user_command_log(userid=userId, command='DISPLAY_SUMMARY', transactionNum=transactionNum)
-    res = requests.post(f'http://localhost:8080/api/commands/display_summary/', json=data)
+    res = s.post(f'http://localhost:8080/api/commands/display_summary/', json=data)
     print(res.status_code) if not res.status_code in (200, 201, 412) else None
 
 def sortByUser(lines):
@@ -395,6 +404,20 @@ def parseLine(line):
 
     return parsedCommand
 
+def groupUserCommands(n, commandsByUser):
+    commandsByNUsers = []
+
+    while commandsByUser:
+        group = []
+        for _ in range(n):
+            if not commandsByUser:
+                break
+            group += commandsByUser.pop()
+
+        commandsByNUsers.append(group)
+
+    return commandsByNUsers
+
 def handleUserCommands(commands):
     for command in commands:
         commandSwitch(command)
@@ -410,11 +433,14 @@ def main():
 
     # Sort commands by user
     commandsByUser = sortByUser(commandLines)
-    numUsers = len(commandsByUser)
+
+    # Partition user commands so each thread can focus on 10 users
+    commandsGroupedBy10Users = groupUserCommands(10, list(commandsByUser.values()))
+    numThreads = len(commandsGroupedBy10Users)
 
     # Set up a thread for each user
-    with concurrent.futures.ThreadPoolExecutor(max_workers=numUsers) as executor:
-        executor.map(handleUserCommands, commandsByUser.values())
+    with concurrent.futures.ThreadPoolExecutor(max_workers=numThreads) as executor:
+        executor.map(handleUserCommands, commandsGroupedBy10Users)
 
     # Run dumplog
     dumplogCommand = parseLine(dumplogLine)
