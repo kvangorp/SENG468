@@ -89,7 +89,8 @@ DATABASES = {
         'CLIENT': {
            'host': 'mongodb',
         },
-        'PORT': 27017
+        'PORT': 27017,
+        'CONN_MAX_AGE': 500
     }
 }
 

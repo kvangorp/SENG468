@@ -6,17 +6,22 @@ services:
     restart: always
     ports:
       - "27017:27017"
+    command: --quiet
+    networks: 
+      - localnet
 
   redis:
     container_name: redis
     image: redis
     ports:
       - "6379:6379"
+    networks: 
+      - localnet
 
   server:
     container_name: transaction_server
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -29,11 +34,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=1
+    networks: 
+      - localnet
 
   server2:
     container_name: transaction_server2
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -46,11 +53,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=2
- 
+    networks: 
+      - localnet
+      
   server3:
     container_name: transaction_server3
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -63,11 +72,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=3
+    networks: 
+      - localnet
 
   server4:
     container_name: transaction_server4
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -80,11 +91,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=4
+    networks: 
+      - localnet
 
   server5:
     container_name: transaction_server5
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -97,11 +110,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=5
+    networks: 
+      - localnet
 
   server6:
     container_name: transaction_server6
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -114,11 +129,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=6
+    networks: 
+      - localnet
 
   server7:
     container_name: transaction_server7
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -131,11 +148,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=7
+    networks: 
+      - localnet
 
   server8:
     container_name: transaction_server8
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -148,11 +167,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=8
+    networks: 
+      - localnet
 
   server9:
     container_name: transaction_server9
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -165,11 +186,13 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=9
+    networks: 
+      - localnet
 
   server10:
     container_name: transaction_server10
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application --timeout 300
     volumes:
       - ./transaction_server/src:/code
     ports:
@@ -182,6 +205,8 @@ services:
     environment: 
       - quoteServerHost=192.168.4.2
       - serverNum=10
+    networks: 
+      - localnet
 
   nginx:
     build: ./transaction_server/nginx
@@ -198,3 +223,9 @@ services:
     - server8
     - server9
     - server10
+    networks: 
+      - localnet
+
+networks:
+  localnet:
+    driver: 'bridge'
