@@ -23,14 +23,13 @@ services:
       - "6379:6379"
 
   server:
-    container_name: transaction_server
     build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
+    command: gunicorn server.wsgi:application
     volumes:
       - ./transaction_server/src:/code
     ports:
-      - "8001:8000"
-      - "4445:4444"
+      - "8000"
+      - "4444"
     depends_on:
       - mongodb
       - quote_server
@@ -40,182 +39,22 @@ services:
       - quoteServerHost=quote_server
       - serverNum=1
   
-  server2:
-    container_name: transaction_server2
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8002:8000"
-      - "4446:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=2
-
-  server3:
-    container_name: transaction_server3
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8003:8000"
-      - "4447:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=3
-  
-  server4:
-    container_name: transaction_server4
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8004:8000"
-      - "4448:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=4
-
-  server5:
-    container_name: transaction_server5
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8005:8000"
-      - "4449:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=5
-    
-  server6:
-    container_name: transaction_server6
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8006:8000"
-      - "4450:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=6
-
-  server7:
-    container_name: transaction_server7
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8007:8000"
-      - "4451:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=7
-  
-  server8:
-    container_name: transaction_server8
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8008:8000"
-      - "4452:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=8
-
-  server9:
-    container_name: transaction_server9
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8009:8000"
-      - "4453:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=9
-
-  server10:
-    container_name: transaction_server10
-    build: ./transaction_server
-    command: gunicorn server.wsgi:application --timeout 300 --bind 0.0.0.0:8000
-    volumes:
-      - ./transaction_server/src:/code
-    ports:
-      - "8010:8000"
-      - "4454:4444"
-    depends_on:
-      - mongodb
-      - quote_server
-      - redis
-    entrypoint: /entrypoint.sh
-    environment: 
-      - quoteServerHost=quote_server
-      - serverNum=10
-
   nginx:
     container_name: nginx
     build: ./transaction_server/nginx
     ports:
       - "8080:80"
     depends_on:
-    - server
-    - server2
-    - server3
-    - server4
-    - server5
-    - server6
-    - server7
-    - server8
-    - server9
-    - server10
+      - server
+
+  web_server:
+    container_name: web_server
+    build: ./react_web_server
+    volumes:
+      - './react_web_server:/app'
+      - '/app/node_modules'
+    ports:
+      - "3001:3000"
+    depends_on:
+      - nginx
 
